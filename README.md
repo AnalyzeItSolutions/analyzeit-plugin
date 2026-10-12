@@ -26,6 +26,7 @@ Then run `/mcp`, choose **analyzeit**, and **Authenticate**. Ask about your data
 | Tool | |
 |---|---|
 | `list_projects`, `list_objects`, `get_ai_access` | See your projects, tables (fields, whether it may read each) and what you have allowed |
+| `create_project`, `propose_import`, `list_sample_datasets`, `propose_sample_data` | **Start from nothing.** Create a project, add data you give it in the chat (CSV/TSV/JSON up to 1 MB) or load sample data. You get a snapshot of the columns and first rows and a link; nothing is added until you approve, and approving lets that assistant read the new table |
 | `query_records`, `get_record`, `aggregate` | Read rows, or get exact count, sum, average, min, max, grouped, computed by AnalyzeIt |
 | `request_access` | Ask to read specific tables. You get a **snapshot** (tables, fields, record counts, a few example rows shown only to you) and a link |
 | `propose_change` | Suggest updating or deleting records. You get the exact **before/after snapshot** and a link; nothing changes until you approve; undo for 30 days |
