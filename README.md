@@ -1,45 +1,52 @@
-# AnalyzeIt for any AI assistant
+# AnalyzeIt for your AI assistant
 
-Your assistant takes the place of AnalyzeIt's own LLM. A sub-agent (`analyzeit-analyst`) does the planning, checking and answer-writing; AnalyzeIt's servers hold your data and compute exact aggregates. A small MCP server connects the two through the AnalyzeIt website's API.
+Use ChatGPT, Claude, Grok, Cursor or any assistant that supports remote MCP servers on your [AnalyzeIt](https://www.analyzeit.in) data.
+
+1. Add the connector to your assistant (one URL, below).
+2. A browser window opens on the AnalyzeIt website. Sign in however you like (password, Google, GitHub) and click **Allow**.
+3. You are sent back to your assistant, which is now connected. Nothing else to install.
 
 ```
-Claude ──▶ analyzeit-analyst (sub-agent) ──▶ MCP tools ──▶ AnalyzeIt website API
-              (replaces the hosted LLM)       (read-only)     (your projects, exact aggregates)
+https://backend-qwiq.onrender.com/mcp
 ```
 
-Everything you need to do happens on the website: you sign in and approve there, and upload files or connect sources there. No CLI or desktop app is needed.
+Per-assistant steps are in **[docs/clients.md](docs/clients.md)**. This repository is the Claude Code plugin (the connector address, the analyst sub-agent and a skill); the connector itself runs on AnalyzeIt's servers, so there is no local program to trust or update.
 
-## Works with
-
-Claude (Code and Desktop), Cursor, VS Code, Windsurf, Zed, Cline, Codex CLI and Gemini CLI as an MCP server; OpenAI, xAI Grok, Gemini, Groq, Mistral, OpenRouter, Ollama and Anthropic through `analyzeit-agent` with your API key; and your own agent through exported tool definitions. Setup for each is in **[docs/clients.md](docs/clients.md)**. ChatGPT and Grok on the web need a hosted OAuth endpoint, which isn't part of this release (details there).
-
-## Install (Claude Code)
+## Install in Claude Code
 
 ```
 claude plugin marketplace add AnalyzeItTech/claude-plugin
 claude plugin install analyzeit@analyzeit
 ```
 
-Requires Node 18+. Then ask Claude about your data, or run `/analyzeit:analyze top 5 regions by revenue`. The first time, the assistant calls `login`: your browser opens the AnalyzeIt website, you sign in and click **Allow**.
+Then run `/mcp`, choose **analyzeit**, and **Authenticate**. Ask about your data, or use `/analyzeit:analyze top 5 regions by revenue`.
 
-## Tools
+## What an assistant can do
 
-| Tool | What it does |
+Read only:
+
+| Tool | |
 |---|---|
-| `login` / `whoami` / `logout` | Browser sign-in (loopback + PKCE, the flow the AnalyzeIt CLI and desktop app use); no password reaches the plugin |
-| `list_projects`, `list_objects`, `list_datasets` | See what is in your account, with field names and types |
-| `query_records` | Read rows, with filters, search and paging (max 200 per call) |
-| `aggregate` | Count / sum / avg / min / max, grouped, computed on the server |
-| `open_in_website` | Open the dashboard, a project, new project or connectors page, for steps you do on the site |
+| `list_projects`, `list_objects` | See your projects and tables, with field names and whether the assistant may read each |
+| `get_ai_access` | See what you have allowed |
+| `query_records`, `get_record` | Read rows (filters, search, paging; 100 per call) |
+| `aggregate` | Exact count, sum, average, min, max, grouped, computed by AnalyzeIt |
+| `list_connectors` | Which sources are connected and when they last synced (never credentials) |
 
-## Security and privacy
+Data from your connected sources (payments, spreadsheets, and so on) is read through the same tools. It cannot change, delete or send anything.
 
-- **Read-only.** There is no tool that creates, changes or deletes data, and none that calls AnalyzeIt's hosted assistant.
-- **Sign-in** happens on the website. The plugin gets a session token through a one-time code bound to a secret only this process holds (PKCE), delivered to `127.0.0.1` only.
-- The token is stored in `~/.config/analyzeit-claude-plugin/session.json` (mode 0600). `logout` removes it. You can instead set `ANALYZEIT_TOKEN`.
-- Data you read through the tools is sent to the model you are using in Claude, like any tool result. Use only with data you are comfortable sharing with it.
-- The plugin talks only to the AnalyzeIt API and site. Override with `ANALYZEIT_API_URL` / `ANALYZEIT_SITE_URL` (https, or http for localhost).
+## You stay in control
+
+- **Nothing is readable until you allow it.** AI data access is off for each project until you turn it on, and you can allow or block individual tables. The assistant is told to ask you; it cannot grant itself access.
+- **Your password and session never reach the assistant.** You approve on the AnalyzeIt website. The assistant gets its own token that works only on this connector, expires after an hour, renews itself, and is cut off if a renewal token is ever replayed.
+- **Disconnect any time** under Profile → Connected AI apps on the website. Changing your password or signing out everywhere disconnects every assistant.
+- **Every read is logged** (tool, table, row count; never values) for 30 days.
+- **Data you let it read goes to your assistant's provider**, like anything you type into it. Allow only what you are comfortable sharing.
+
+## Report a problem
+
+Security issues: please report privately to the AnalyzeIt team rather than in a public issue.
 
 ## Develop
 
-`cd analyzeit && npm test` runs the stdio server against a stand-in API and a fake browser (full sign-in exchange), the HTTP transport (including host/origin/token checks), both provider wire formats with fake model servers, and checks `tools/*.json` are in sync.
+`node test/check.mjs` validates the manifests and scans the package for anything that looks like a secret.

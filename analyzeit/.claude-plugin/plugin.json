@@ -1,7 +1,7 @@
 {
   "name": "analyzeit",
-  "version": "0.3.0",
-  "description": "Lets Claude work inside AnalyzeIt. Sign in through the AnalyzeIt website; the analyzeit-analyst sub-agent takes the planner/answer role AnalyzeIt's own LLM would have and reads your projects through the website API, with exact server-side aggregates.",
+  "version": "0.4.0",
+  "description": "Connect Claude to your AnalyzeIt data through AnalyzeIt's hosted, read-only connector. Sign in once on the AnalyzeIt website; the analyzeit-analyst sub-agent does the analysis with the tools you allow.",
   "author": { "name": "AnalyzeIt" },
-  "keywords": ["analytics", "data", "mcp"]
+  "keywords": ["analytics", "data", "mcp", "oauth"]
 }

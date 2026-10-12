@@ -5,10 +5,10 @@ description: How to work with AnalyzeIt from Claude. Use when the user mentions 
 
 # Working with AnalyzeIt
 
-AnalyzeIt holds the user's data and computes exact aggregates on its servers. This plugin makes **you** the model: the `analyzeit` MCP tools read the data through the AnalyzeIt website's API, and you do the planning, checking and writing that AnalyzeIt's own assistant would do.
+AnalyzeIt holds the user's data and computes exact aggregates. This plugin connects Claude to it through a hosted, read-only connector, and makes **you** the model: you do the planning, checking and writing that AnalyzeIt's own assistant would do.
 
-**Delegate to the `analyzeit-analyst` sub-agent** for any data question (Agent tool, `subagent_type: analyzeit-analyst`), passing the user's question verbatim. Do the work yourself only for a trivial lookup such as listing projects.
+**Delegate to the `analyzeit:analyzeit-analyst` sub-agent** for any data question (Agent tool, `subagent_type: analyzeit:analyzeit-analyst`), passing the user's question verbatim.
 
-Everything the user must do happens on the AnalyzeIt website: signing in (the `login` tool opens it, the user clicks Allow), uploading files, connecting sources, billing. The plugin never handles passwords or changes data. Use `open_in_website` to take the user to the right page.
+**Connecting:** the first time, the connector needs the user to sign in. In Claude Code they run `/mcp`, pick `analyzeit`, and choose Authenticate; a browser opens on the AnalyzeIt website where they log in however they like and click Allow. You never handle a password or token.
 
-Tools (prefix `mcp__analyzeit__`): `login`, `whoami`, `logout`, `list_projects`, `list_objects`, `list_datasets`, `query_records`, `aggregate`, `open_in_website`.
+**What the user controls on the website:** which projects (and tables) AI may read (off by default), connectors, uploads, and disconnecting this app under Profile → Connected AI apps. If a result says access is not allowed, relay that and the link; do not try to work around it.
