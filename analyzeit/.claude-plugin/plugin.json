@@ -1,0 +1,7 @@
+{
+  "name": "analyzeit",
+  "version": "0.1.0",
+  "description": "Lets Claude work inside AnalyzeIt. The analyzeit-analyst sub-agent takes the planner/answer role AnalyzeIt's own LLM would have, and uses AnalyzeIt's on-device engine (encrypted vault, built-in analyses, read-only SQL) as its tools.",
+  "author": { "name": "AnalyzeIt" },
+  "keywords": ["analytics", "data", "sql", "mcp"]
+}
