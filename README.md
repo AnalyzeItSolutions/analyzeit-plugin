@@ -47,7 +47,7 @@ Data from your connected sources is read through the same tools.
 
 ## Report a problem
 
-Security issues: please report privately to the AnalyzeIt team rather than in a public issue.
+Security issues: see [SECURITY.md](SECURITY.md); please report privately, not in a public issue.
 
 ## Develop
 
