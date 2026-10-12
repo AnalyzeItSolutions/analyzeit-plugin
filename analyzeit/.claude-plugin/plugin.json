@@ -1,6 +1,6 @@
 {
   "name": "analyzeit",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Connect Claude to your AnalyzeIt data through AnalyzeIt's hosted, read-only connector. Sign in once on the AnalyzeIt website; the analyzeit-analyst sub-agent does the analysis with the tools you allow.",
   "author": { "name": "AnalyzeIt" },
   "keywords": ["analytics", "data", "mcp", "oauth"]

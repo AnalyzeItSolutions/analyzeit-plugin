@@ -12,7 +12,7 @@ Menu names change between app versions; if yours differs, look for "connectors",
 
 ## Claude
 
-- **Claude Code (plugin, recommended):** `claude plugin marketplace add AnalyzeItTech/claude-plugin`, `claude plugin install analyzeit@analyzeit`, then `/mcp` → analyzeit → Authenticate.
+- **Claude Code (plugin, recommended):** `claude plugin marketplace add AnalyzeItTech/analyzeit-connector`, `claude plugin install analyzeit@analyzeit`, then `/mcp` → analyzeit → Authenticate.
 - **Claude Code (server only):** `claude mcp add --transport http analyzeit https://backend-qwiq.onrender.com/mcp`, then `/mcp` → Authenticate.
 - **Claude on the web / desktop:** Settings → Connectors → add a custom connector → paste the address.
 
@@ -24,9 +24,9 @@ Settings → Connectors → add a custom connector (MCP server) → paste the ad
 
 Wherever the app asks for a remote MCP server URL (Grok, Cursor, VS Code, Windsurf, Zed, Cline, Codex, Gemini CLI, and others), paste the address and choose sign-in / OAuth if asked. Clients that only run local programs cannot use a hosted connector.
 
-## What it can see
+## What it can do
 
-Only what you allow. In each project's settings, turn on AI data access for the whole project or for individual tables. See `README.md` for the full list of what the assistant can and cannot do, and the website's *Connect an AI assistant* docs page for the security details.
+Read what you allow, and *ask*: for access to a table, for a change to your data, or to connect a source. Each ask comes with a snapshot and a link; you approve on the AnalyzeIt website. On the sign-in page there is an optional, unticked box that lets you approve from the chat instead by saying so (small changes and specific tables only). See `README.md` for the full list and the safeguards.
 
 ## Disconnecting
 

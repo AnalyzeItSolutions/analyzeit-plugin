@@ -15,7 +15,7 @@ Per-assistant steps are in **[docs/clients.md](docs/clients.md)**. This reposito
 ## Install in Claude Code
 
 ```
-claude plugin marketplace add AnalyzeItTech/claude-plugin
+claude plugin marketplace add AnalyzeItTech/analyzeit-connector
 claude plugin install analyzeit@analyzeit
 ```
 
@@ -23,24 +23,26 @@ Then run `/mcp`, choose **analyzeit**, and **Authenticate**. Ask about your data
 
 ## What an assistant can do
 
-Read only:
-
 | Tool | |
 |---|---|
-| `list_projects`, `list_objects` | See your projects and tables, with field names and whether the assistant may read each |
-| `get_ai_access` | See what you have allowed |
-| `query_records`, `get_record` | Read rows (filters, search, paging; 100 per call) |
-| `aggregate` | Exact count, sum, average, min, max, grouped, computed by AnalyzeIt |
-| `list_connectors` | Which sources are connected and when they last synced (never credentials) |
+| `list_projects`, `list_objects`, `get_ai_access` | See your projects, tables (fields, whether it may read each) and what you have allowed |
+| `query_records`, `get_record`, `aggregate` | Read rows, or get exact count, sum, average, min, max, grouped, computed by AnalyzeIt |
+| `request_access` | Ask to read specific tables. You get a **snapshot** (tables, fields, record counts, a few example rows shown only to you) and a link |
+| `propose_change` | Suggest updating or deleting records. You get the exact **before/after snapshot** and a link; nothing changes until you approve; undo for 30 days |
+| `list_available_connectors`, `connect_source` | Start connecting any source AnalyzeIt supports: you get a link and finish on the AnalyzeIt website. No password or key ever goes through the chat |
+| `list_connectors`, `get_request_status`, `reject_request` | See connected sources, check whether you approved something, or cancel it |
+| `approve_request`, `undo_change` | **Only if you ticked chat approval when connecting.** Carry out what you approve by saying so in the chat |
 
-Data from your connected sources (payments, spreadsheets, and so on) is read through the same tools. It cannot change, delete or send anything.
+Data from your connected sources is read through the same tools.
 
 ## You stay in control
 
-- **Nothing is readable until you allow it.** AI data access is off for each project until you turn it on, and you can allow or block individual tables. The assistant is told to ask you; it cannot grant itself access.
+- **Nothing is readable until you allow it.** AI data access is off for each project until you allow it, per table or for the whole project. The assistant can only ask; it cannot grant itself access.
+- **You see before anything happens.** Access requests, changes and new connections each come as a snapshot plus a link. You approve on the AnalyzeIt website, or, if you chose to, by telling the assistant “yes, approve it”.
+- **Chat approval is opt-in and limited.** It is a tick-box on the sign-in page, off unless you tick it. It only covers what that same connection proposed, after a short pause, changes of up to 100 records and specific tables (never a whole project). Your words are logged with the approval. Everything bigger needs the website. Data can contain text written by other people, so leave it off if you do not need it.
 - **Your password and session never reach the assistant.** You approve on the AnalyzeIt website. The assistant gets its own token that works only on this connector, expires after an hour, renews itself, and is cut off if a renewal token is ever replayed.
-- **Disconnect any time** under Profile → Connected AI apps on the website. Changing your password or signing out everywhere disconnects every assistant.
-- **Every read is logged** (tool, table, row count; never values) for 30 days.
+- **Disconnect any time** under Profile → Connected AI apps. Changing your password or signing out everywhere disconnects every assistant.
+- **Every call is logged** (tool, table, row count, and your words for chat approvals; never data values) for 30 days.
 - **Data you let it read goes to your assistant's provider**, like anything you type into it. Allow only what you are comfortable sharing.
 
 ## Report a problem
