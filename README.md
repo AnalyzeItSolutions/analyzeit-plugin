@@ -1,6 +1,6 @@
-# AnalyzeIt plugin for Claude
+# AnalyzeIt for any AI assistant
 
-Claude takes the place of AnalyzeIt's own LLM. A sub-agent (`analyzeit-analyst`) does the planning, checking and answer-writing; AnalyzeIt's servers hold your data and compute exact aggregates. A small MCP server connects the two through the AnalyzeIt website's API.
+Your assistant takes the place of AnalyzeIt's own LLM. A sub-agent (`analyzeit-analyst`) does the planning, checking and answer-writing; AnalyzeIt's servers hold your data and compute exact aggregates. A small MCP server connects the two through the AnalyzeIt website's API.
 
 ```
 Claude ──▶ analyzeit-analyst (sub-agent) ──▶ MCP tools ──▶ AnalyzeIt website API
@@ -9,14 +9,18 @@ Claude ──▶ analyzeit-analyst (sub-agent) ──▶ MCP tools ──▶ Ana
 
 Everything you need to do happens on the website: you sign in and approve there, and upload files or connect sources there. No CLI or desktop app is needed.
 
-## Install
+## Works with
+
+Claude (Code and Desktop), Cursor, VS Code, Windsurf, Zed, Cline, Codex CLI and Gemini CLI as an MCP server; OpenAI, xAI Grok, Gemini, Groq, Mistral, OpenRouter, Ollama and Anthropic through `analyzeit-agent` with your API key; and your own agent through exported tool definitions. Setup for each is in **[docs/clients.md](docs/clients.md)**. ChatGPT and Grok on the web need a hosted OAuth endpoint, which isn't part of this release (details there).
+
+## Install (Claude Code)
 
 ```
 claude plugin marketplace add AnalyzeItTech/claude-plugin
 claude plugin install analyzeit@analyzeit
 ```
 
-Requires Node 18+. Then ask Claude about your data, or run `/analyzeit:analyze top 5 regions by revenue`. The first time, Claude calls `login`: your browser opens the AnalyzeIt website, you sign in and click **Allow**.
+Requires Node 18+. Then ask Claude about your data, or run `/analyzeit:analyze top 5 regions by revenue`. The first time, the assistant calls `login`: your browser opens the AnalyzeIt website, you sign in and click **Allow**.
 
 ## Tools
 
@@ -38,4 +42,4 @@ Requires Node 18+. Then ask Claude about your data, or run `/analyzeit:analyze t
 
 ## Develop
 
-`node analyzeit/test/smoke.mjs` runs the server against a local stand-in for the API and a fake browser, including the full sign-in exchange.
+`cd analyzeit && npm test` runs the stdio server against a stand-in API and a fake browser (full sign-in exchange), the HTTP transport (including host/origin/token checks), both provider wire formats with fake model servers, and checks `tools/*.json` are in sync.

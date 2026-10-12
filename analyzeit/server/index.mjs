@@ -1,164 +1,69 @@
 #!/usr/bin/env node
-// AnalyzeIt MCP server (stdio, no dependencies).
-// Signs the user in through the AnalyzeIt website and reads their projects, objects and records through
-// the website's API. It does not call AnalyzeIt's hosted assistant: the connected assistant does the reasoning.
+// AnalyzeIt MCP server (no dependencies).
+//   node index.mjs                    stdio (Claude, Cursor, VS Code, Codex CLI, Gemini CLI, Zed, ...)
+//   node index.mjs --http [--port N]  Streamable HTTP on 127.0.0.1 for clients that connect by URL
+// Signs the user in through the AnalyzeIt website and reads their data through its API. It never calls
+// AnalyzeIt's hosted assistant: the connected assistant does the reasoning.
 import { createInterface } from "node:readline";
+import { createServer } from "node:http";
+import { timingSafeEqual } from "node:crypto";
 import { realpathSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { api, NotSignedIn } from "./api.mjs";
 import { loadConfig } from "./config.mjs";
-import { exchange, openBrowser, startLogin } from "./login.mjs";
-import { clearToken, loadToken, saveToken } from "./session.mjs";
+import { handleMessage } from "./rpc.mjs";
 
-const MAX_OUT = 100_000;
-const str = (d) => ({ type: "string", description: d });
-const filtersSchema = {
-  type: "array",
-  description: "Filters, all must match. Operators are those of the AnalyzeIt records API (eq, neq, gt, gte, lt, lte, contains, ...).",
-  items: { type: "object", properties: { field: str("Field api_name"), operator: str("e.g. eq"), value: {} }, required: ["field"] },
-};
-const PAGES = { dashboard: "/dashboard", new_project: "/new-project", connectors: "/connectors", project: "/project/" };
+const send = (m) => process.stdout.write(`${JSON.stringify(m)}\n`);
 
-const TOOLS = [
-  {
-    name: "login",
-    description: "Sign in to AnalyzeIt. Opens the AnalyzeIt website in the user's browser; they sign in there and click Allow. Waits up to 5 minutes. Call this when other tools say the user is not signed in.",
-    inputSchema: { type: "object", properties: {} },
-    run: async (cfg) => {
-      const { url, result } = await startLogin(cfg);
-      const opened = openBrowser(url);
-      const pending = result.then((r) => exchange(cfg, r));
-      const { token, email } = await pending.catch((e) => { throw new Error(`${e.message}${opened ? "" : ` If no browser opened, visit: ${url}`}`); });
-      saveToken(cfg, token, email);
-      return { signed_in_as: email, note: "Session stored for this plugin only. Use `logout` to remove it." };
-    },
-  },
-  {
-    name: "whoami",
-    description: "Show who is signed in (or that nobody is).",
-    inputSchema: { type: "object", properties: {} },
-    run: async (cfg) => {
-      if (!loadToken(cfg)) return { signed_in: false };
-      const me = await api.me(cfg);
-      return { signed_in: true, email: me.email, name: me.name, tier: me.tier ?? me.plan };
-    },
-  },
-  {
-    name: "logout",
-    description: "Forget the stored AnalyzeIt session on this computer.",
-    inputSchema: { type: "object", properties: {} },
-    run: async (cfg) => { clearToken(cfg); return { signed_in: false }; },
-  },
-  {
-    name: "list_projects",
-    description: "List the user's AnalyzeIt projects (id, name).",
-    inputSchema: { type: "object", properties: {} },
-    run: async (cfg) => (await api.projects(cfg)).map((p) => ({ id: p.id, name: p.name, widgets: p.widget_count })),
-  },
-  {
-    name: "list_objects",
-    description: "List the data objects (tables) in a project with their fields and types. Call before querying so field names are real.",
-    inputSchema: { type: "object", properties: { project_id: str("Project id") }, required: ["project_id"] },
-    run: async (cfg, a) => (await api.objects(cfg, a.project_id)).map((o) => ({
-      id: o.id, api_name: o.api_name, label: o.label, source: o.source,
-      fields: (o.fields || []).map((f) => ({ api_name: f.api_name, type: f.type })),
-    })),
-  },
-  {
-    name: "list_datasets",
-    description: "List files the user uploaded to a project (each becomes an object).",
-    inputSchema: { type: "object", properties: { project_id: str("Project id") }, required: ["project_id"] },
-    run: (cfg, a) => api.datasets(cfg, a.project_id),
-  },
-  {
-    name: "query_records",
-    description: "Fetch rows from an object, with optional filters, search and sorting. Max 200 rows per call; page with skip. For totals, averages or groupings use `aggregate` instead of reading rows.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        object: str("Object id or api_name"), filters: filtersSchema, search: str("Free-text search"),
-        limit: { type: "integer", description: "1-200, default 50" }, skip: { type: "integer" },
-        sort_by: str("Field api_name, default created_at"), sort_desc: { type: "boolean" },
-      },
-      required: ["object"],
-    },
-    run: async (cfg, a) => {
-      const r = await api.query(cfg, a.object, {
-        filters: a.filters || [], search: a.search ?? null, limit: Math.min(Math.max(a.limit || 50, 1), 200), skip: a.skip || 0,
-        sort_by: a.sort_by || "created_at", sort_desc: a.sort_desc ?? true,
-      });
-      return { total: r.total, returned: r.records.length, has_more: r.has_more, rows: r.records.map((x) => ({ id: x.id, ...(x.data || {}) })) };
-    },
-  },
-  {
-    name: "aggregate",
-    description: "Server-computed group-and-aggregate over an object: count, sum, avg, min or max of a numeric field, optionally grouped by a field (dates can be bucketed by month). Exact numbers, no model involved. Reports how many records were used and whether it was truncated.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        object: str("Object id or api_name"), metric: { type: "string", enum: ["count", "sum", "avg", "min", "max"] },
-        field: str("Numeric field (required unless metric is count)"), group_by: str("Field to group by (omit for one number)"),
-        bucket: { type: "string", enum: ["month"] }, filters: filtersSchema, limit: { type: "integer", description: "1-50 groups, default 12" },
-        sort: { type: "string", enum: ["label_asc"] },
-      },
-      required: ["object"],
-    },
-    run: (cfg, a) => api.aggregate(cfg, a.object, {
-      metric: a.metric || "count", field: a.field ?? null, group_by: a.group_by ?? null, bucket: a.bucket ?? null,
-      filters: a.filters || [], limit: Math.min(Math.max(a.limit || 12, 1), 50), sort: a.sort ?? null,
-    }),
-  },
-  {
-    name: "open_in_website",
-    description: "Open a page of the AnalyzeIt website in the user's browser, for things the user does there: uploading data (open the project and attach the file in its chat), connecting a source (`connectors`), creating a project, or viewing dashboards. Tell the user what to do on the page.",
-    inputSchema: { type: "object", properties: { page: { type: "string", enum: Object.keys(PAGES) }, project_id: str("Needed for page=project") }, required: ["page"] },
-    run: async (cfg, a) => {
-      let path = PAGES[a.page];
-      if (!path) throw new Error("Unknown page");
-      if (a.page === "project") {
-        if (!a.project_id || !/^[\w.-]{1,128}$/.test(a.project_id)) throw new Error("page=project needs project_id");
-        path += encodeURIComponent(a.project_id);
-      }
-      const url = `${cfg.site}${path}`;
-      return { url, opened: openBrowser(url) };
-    },
-  },
-];
-
-async function callTool(cfg, name, args = {}) {
-  const t = TOOLS.find((x) => x.name === name);
-  if (!t) return { isError: true, content: [{ type: "text", text: `Unknown tool ${name}` }] };
-  try {
-    const out = await t.run(cfg, args || {});
-    let text = JSON.stringify(out, null, 1);
-    if (text.length > MAX_OUT) text = `${text.slice(0, MAX_OUT)}\n[output truncated: narrow the filters or use aggregate]`;
-    return { content: [{ type: "text", text }] };
-  } catch (e) {
-    return { isError: true, content: [{ type: "text", text: e instanceof NotSignedIn ? e.message : String(e.message || e) }] };
-  }
+export function runStdio(cfg) {
+  createInterface({ input: process.stdin }).on("line", (line) => {
+    if (!line.trim()) return;
+    let msg;
+    try { msg = JSON.parse(line); } catch { return send({ jsonrpc: "2.0", id: null, error: { code: -32700, message: "Parse error" } }); }
+    handleMessage(cfg, msg)
+      .then((r) => r && send(r))
+      .catch((e) => msg.id !== undefined && send({ jsonrpc: "2.0", id: msg.id, error: { code: -32603, message: String(e.message || e) } }));
+  });
 }
 
-const send = (m) => process.stdout.write(`${JSON.stringify({ jsonrpc: "2.0", ...m })}\n`);
+const LOCAL_HOST = /^(127\.0\.0\.1|localhost|\[::1\])(:\d+)?$/;
 
-async function handle(cfg, msg) {
-  const { id, method, params } = msg;
-  if (method === "initialize") return send({ id, result: { protocolVersion: params?.protocolVersion || "2024-11-05", capabilities: { tools: {} }, serverInfo: { name: "analyzeit", version: "0.2.0" } } });
-  if (method === "tools/list") return send({ id, result: { tools: TOOLS.map(({ name, description, inputSchema }) => ({ name, description, inputSchema })) } });
-  if (method === "tools/call") return send({ id, result: await callTool(cfg, params?.name, params?.arguments) });
-  if (method === "ping") return send({ id, result: {} });
-  if (id !== undefined) send({ id, error: { code: -32601, message: `Method not found: ${method}` } });
+/** Streamable HTTP, request/response only (no SSE). Local only: refuses foreign Host/Origin headers. */
+export function createHttpServer(cfg, { token = process.env.ANALYZEIT_MCP_TOKEN || "" } = {}) {
+  return createServer(async (req, res) => {
+    const reply = (status, body, headers = {}) => {
+      res.writeHead(status, { "content-type": "application/json", "cache-control": "no-store", ...headers });
+      res.end(body === undefined ? "" : JSON.stringify(body));
+    };
+    const origin = req.headers.origin;
+    if (!LOCAL_HOST.test(req.headers.host || "")) return reply(403, { error: "forbidden host" });
+    if (origin && !LOCAL_HOST.test(origin.replace(/^https?:\/\//, ""))) return reply(403, { error: "forbidden origin" });
+    if (token) {
+      const got = Buffer.from((req.headers.authorization || "").replace(/^Bearer /, ""));
+      const want = Buffer.from(token);
+      if (got.length !== want.length || !timingSafeEqual(got, want)) return reply(401, { error: "unauthorized" });
+    }
+    if (new URL(req.url, "http://x").pathname !== "/mcp") return reply(404, { error: "not found" });
+    if (req.method !== "POST") return reply(405, { error: "POST only" }, { allow: "POST" });
+    let raw = "";
+    for await (const c of req) { raw += c; if (raw.length > 1_000_000) return reply(413, { error: "too large" }); }
+    let msg;
+    try { msg = JSON.parse(raw); } catch { return reply(400, { jsonrpc: "2.0", id: null, error: { code: -32700, message: "Parse error" } }); }
+    const batch = Array.isArray(msg);
+    const out = (await Promise.all((batch ? msg : [msg]).map((m) => handleMessage(cfg, m).catch((e) => ({ jsonrpc: "2.0", id: m?.id ?? null, error: { code: -32603, message: String(e.message || e) } }))))).filter(Boolean);
+    if (!out.length) return reply(202);
+    reply(200, batch ? out : out[0]);
+  });
 }
 
 const isMain = process.argv[1] && realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url));
 if (isMain) {
   let cfg;
   try { cfg = loadConfig(); } catch (e) { process.stderr.write(`${e.message}\n`); process.exit(1); }
-  createInterface({ input: process.stdin }).on("line", (line) => {
-    if (!line.trim()) return;
-    let msg;
-    try { msg = JSON.parse(line); } catch { return send({ id: null, error: { code: -32700, message: "Parse error" } }); }
-    handle(cfg, msg).catch((e) => msg.id !== undefined && send({ id: msg.id, error: { code: -32603, message: String(e.message || e) } }));
-  });
+  const args = process.argv.slice(2);
+  if (args.includes("--http")) {
+    const port = Number(args[args.indexOf("--port") + 1]) || 8765;
+    createHttpServer(cfg).listen(port, "127.0.0.1", () => process.stderr.write(`AnalyzeIt MCP on http://127.0.0.1:${port}/mcp\n`));
+  } else {
+    runStdio(cfg);
+  }
 }
-
-export { TOOLS, callTool };
