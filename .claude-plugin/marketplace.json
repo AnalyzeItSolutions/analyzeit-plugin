@@ -5,7 +5,7 @@
     {
       "name": "analyzeit",
       "source": "./analyzeit",
-      "description": "Drive AnalyzeIt from Claude: a sub-agent stands in for AnalyzeIt's own LLM and works your data through AnalyzeIt's on-device engine."
+      "description": "Drive AnalyzeIt from Claude: a sub-agent stands in for AnalyzeIt's own LLM and reads your AnalyzeIt data through the website API after a browser sign-in."
     }
   ]
 }
