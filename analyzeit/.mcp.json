@@ -1,8 +1,10 @@
 {
   "mcpServers": {
     "analyzeit": {
-      "type": "http",
-      "url": "https://backend-qwiq.onrender.com/mcp"
+      "command": "analyzeit",
+      "args": [
+        "mcp"
+      ]
     }
   }
 }

@@ -1,11 +1,13 @@
 {
   "name": "analyzeit",
-  "owner": { "name": "AnalyzeIt" },
+  "owner": {
+    "name": "AnalyzeIt"
+  },
   "plugins": [
     {
       "name": "analyzeit",
       "source": "./analyzeit",
-      "description": "Connect Claude to your AnalyzeIt data through the hosted, read-only AnalyzeIt connector; a sub-agent does the analysis."
+      "description": "Ask Claude about data on your own computer. Runs the analyzeit command; Claude gets computed results only, never rows."
     }
   ]
 }

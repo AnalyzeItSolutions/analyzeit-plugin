@@ -1,55 +1,46 @@
-# AnalyzeIt for your AI assistant
+# AnalyzeIt for Claude
 
-Use ChatGPT, Claude, Grok, Cursor or any assistant that supports remote MCP servers on your [AnalyzeIt](https://www.analyzeit.in) data.
-
-1. Add the connector to your assistant (one URL, below).
-2. A browser window opens on the AnalyzeIt website. Sign in however you like (password, Google, GitHub) and click **Allow**.
-3. You are sent back to your assistant, which is now connected. Nothing else to install.
+Ask Claude about the data on your computer **without the data leaving it.**
 
 ```
-https://backend-qwiq.onrender.com/mcp
+curl -fsSL https://www.analyzeit.in/install.sh | sh
 ```
 
-Per-assistant steps are in **[docs/clients.md](docs/clients.md)**. This repository is the Claude Code plugin (the connector address, the analyst sub-agent and a skill); the connector itself runs on AnalyzeIt's servers, so there is no local program to trust or update.
+The installer puts the `analyzeit` command on your computer, verifies it, and registers it with Claude (Claude Code and Claude Desktop, when present). Then:
 
-## Install in Claude Code
+```
+analyzeit data import sales.csv          # or: analyzeit connect ~/Reports
+analyzeit data share sales on            # lets Claude see computed results of this dataset
+```
+
+Ask Claude "which regions sold most last quarter?" or use `/analyzeit:analyze top 5 regions by revenue`.
+
+## How it works
+
+This plugin is a thin layer: it starts `analyzeit mcp` (a tool server over stdio, part of the command line program). That program answers from your encrypted local vault and runs the analysis on your computer. It works with no network.
+
+| Tool | What Claude gets |
+|---|---|
+| `list_datasets` | Names, row counts, column names and types of the datasets **you allowed** |
+| `analyze` | A computed result of a built-in analysis: summary, top groups, trend, forecast, outlier counts, drivers |
+| `privacy_policy` | What stays on your computer and what may leave it |
+
+There is **no** tool that returns rows, runs SQL or reads files. That is enforced in the program (`core/src/egress.rs`), not by asking Claude to behave: private datasets return nothing; columns that are nearly unique per row (ids, names, emails) cannot be grouped by; groups of fewer than 3 records are left out; tables are capped at 50 rows and cells at 80 characters. Tests use planted canary values and a stub server to prove none reach the output.
+
+What Claude is told is sent to Anthropic like anything you type into Claude. That is the computed result, not your data. `analyzeit policy` prints the rule.
+
+## Manual install
 
 ```
 claude plugin marketplace add AnalyzeItTech/analyzeit-connector
 claude plugin install analyzeit@analyzeit
 ```
+or without the plugin: `claude mcp add --scope user analyzeit -- analyzeit mcp`. Claude Desktop: add `"analyzeit": {"command": "analyzeit", "args": ["mcp"]}` under `mcpServers` in `claude_desktop_config.json`.
 
-Then run `/mcp`, choose **analyzeit**, and **Authenticate**. Ask about your data, or use `/analyzeit:analyze top 5 regions by revenue`.
+## Online projects (optional)
 
-## What an assistant can do
-
-| Tool | |
-|---|---|
-| `list_projects`, `list_objects`, `get_ai_access` | See your projects, tables (fields, whether it may read each) and what you have allowed |
-| `create_project`, `propose_import`, `list_sample_datasets`, `propose_sample_data` | **Start from nothing.** Create a project, add data you give it in the chat (CSV/TSV/JSON up to 1 MB) or load sample data. You get a snapshot of the columns and first rows and a link; nothing is added until you approve, and approving lets that assistant read the new table |
-| `query_records`, `get_record`, `aggregate` | Read rows, or get exact count, sum, average, min, max, grouped, computed by AnalyzeIt |
-| `request_access` | Ask to read specific tables. You get a **snapshot** (tables, fields, record counts, a few example rows shown only to you) and a link |
-| `propose_change` | Suggest updating or deleting records. You get the exact **before/after snapshot** and a link; nothing changes until you approve; undo for 30 days |
-| `list_available_connectors`, `connect_source` | Start connecting any source AnalyzeIt supports: you get a link and finish on the AnalyzeIt website. No password or key ever goes through the chat |
-| `list_connectors`, `get_request_status`, `reject_request` | See connected sources, check whether you approved something, or cancel it |
-| `approve_request`, `undo_change` | **Only if you ticked chat approval when connecting.** Carry out what you approve by saying so in the chat |
-
-Data from your connected sources is read through the same tools.
-
-## You stay in control
-
-- **Nothing is readable until you allow it.** AI data access is off for each project until you allow it, per table or for the whole project. The assistant can only ask; it cannot grant itself access.
-- **You see before anything happens.** Access requests, changes and new connections each come as a snapshot plus a link. You approve on the AnalyzeIt website, or, if you chose to, by telling the assistant “yes, approve it”.
-- **Chat approval is opt-in and limited.** It is a tick-box on the sign-in page, off unless you tick it. It only covers what that same connection proposed, after a short pause, changes of up to 100 records and specific tables (never a whole project). Your words are logged with the approval. Everything bigger needs the website. Data can contain text written by other people, so leave it off if you do not need it.
-- **Your password and session never reach the assistant.** You approve on the AnalyzeIt website. The assistant gets its own token that works only on this connector, expires after an hour, renews itself, and is cut off if a renewal token is ever replayed.
-- **Disconnect any time** under Profile → Connected AI apps. Changing your password or signing out everywhere disconnects every assistant.
-- **Every call is logged** (tool, table, row count, and your words for chat approvals; never data values) for 30 days.
-- **Data you let it read goes to your assistant's provider**, like anything you type into it. Allow only what you are comfortable sharing.
-
-## Report a problem
-
-Security issues: see [SECURITY.md](SECURITY.md); please report privately, not in a public issue.
+Data kept in your AnalyzeIt *account* can also be reached through the hosted connector for assistants that cannot run local programs: see [docs/hosted-connector.md](docs/hosted-connector.md).
 
 ## Develop
 
-`node test/check.mjs` validates the manifests and scans the package for anything that looks like a secret.
+`node test/check.mjs` validates the manifests, checks that the server is the local command (no URL, no tokens) and scans the package for secrets.

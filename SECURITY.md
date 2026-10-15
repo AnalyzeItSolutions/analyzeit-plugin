@@ -1,6 +1,6 @@
 # Security
 
-This repository is a thin package: the connector address, an analyst sub-agent and documentation. The connector itself (sign-in, permissions, tools) runs on AnalyzeIt's servers.
+This repository is a thin package: it starts the `analyzeit` command (`analyzeit mcp`), an analyst sub-agent and documentation. There is no hosted service in the plugin's path; analyses run on the user's computer.
 
 ## Reporting a vulnerability
 
@@ -10,8 +10,8 @@ Reports about the connector service (sign-in flow, permission checks, token hand
 
 ## What is in scope and what protects users
 
-- Assistants get their own revocable, hour-long tokens that work only on the connector; passwords and website sessions never reach them.
-- Reading data is off until the user allows it, per project or table. Access requests, changes and new connections are snapshots the user approves.
-- Approving from the chat is an optional tick-box at sign-in, off unless ticked, and limited in size and scope.
+- The tool server returns computed results only. It has no tool that returns rows, runs SQL or reads files; a dataset is invisible until the user allows it (`analyzeit data share <dataset> on`); id-like columns and groups under 3 records are refused. Bypasses of that rule are the most valuable reports (`core/src/egress.rs`).
+- The local endpoint binds 127.0.0.1 only, requires bearer tokens kept in an owner-only file, rejects browser requests (no Origin) and wrong Host headers. The plugin's token can only reach the results-only routes.
+- The installer verifies a SHA-256 (and, with `minisign` installed, a signature) before installing anything.
 
 Details for users are in the README.

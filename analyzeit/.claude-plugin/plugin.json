@@ -1,7 +1,15 @@
 {
   "name": "analyzeit",
-  "version": "0.6.0",
-  "description": "Connect Claude to your AnalyzeIt data through AnalyzeIt's hosted, read-only connector. Sign in once on the AnalyzeIt website; the analyzeit-analyst sub-agent does the analysis with the tools you allow.",
-  "author": { "name": "AnalyzeIt" },
-  "keywords": ["analytics", "data", "mcp", "oauth"]
+  "version": "0.7.0",
+  "description": "Ask Claude about your data without it leaving your computer. A thin layer over the analyzeit command: analyses run on your device and Claude receives computed results only, never rows.",
+  "author": {
+    "name": "AnalyzeIt"
+  },
+  "keywords": [
+    "analytics",
+    "data",
+    "mcp",
+    "local",
+    "privacy"
+  ]
 }

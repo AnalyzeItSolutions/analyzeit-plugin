@@ -1,3 +1,5 @@
+> **This is the optional online connector** for ChatGPT, Grok and other assistants that cannot run local programs. It reads data stored in your AnalyzeIt *account*. It is not what the Claude plugin uses: the plugin runs the `analyzeit` command on your computer and sees computed results only (see the README).
+
 # Connecting your assistant
 
 You need an assistant that supports **remote MCP servers with sign-in (OAuth)**. The address is always:
