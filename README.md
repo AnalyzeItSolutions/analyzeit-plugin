@@ -3,7 +3,7 @@
 Ask Claude about the data on your computer **without the data leaving it.**
 
 ```
-curl -fsSL https://www.analyzeit.in/install.sh | sh
+curl -fsSL https://www.analyzeit.si/install.sh | sh
 ```
 
 The installer puts the `analyzeit` command on your computer, verifies it, and registers it with Claude (Claude Code and Claude Desktop, when present). Then:

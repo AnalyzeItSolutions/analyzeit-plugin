@@ -9,6 +9,6 @@ AnalyzeIt keeps the user's data **on their own computer** and analyses it there.
 
 **Delegate to the `analyzeit:analyzeit-analyst` sub-agent** for any data question (Agent tool, `subagent_type: analyzeit:analyzeit-analyst`), passing the user's question verbatim.
 
-**If the tools are missing:** the `analyzeit` command is not installed or not on PATH. Tell the user to run `curl -fsSL https://www.analyzeit.in/install.sh | sh`, then restart Claude.
+**If the tools are missing:** the `analyzeit` command is not installed or not on PATH. Tell the user to run `curl -fsSL https://www.analyzeit.si/install.sh | sh`, then restart Claude.
 
 **What the user controls:** a dataset is invisible to you until they allow it with `analyzeit data share <dataset> on` (or the switch on the dataset's page in the desktop app). They can turn that off any time. `privacy_policy` says exactly what stays on the device; quote it if asked where their data goes. Do not try to work around a refusal, and never ask for files, rows or credentials.
