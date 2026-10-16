@@ -14,13 +14,13 @@ if [ -z "$bin" ]; then
   done
 fi
 if [ -z "$bin" ] || [ ! -x "$bin" ]; then
-  echo "AnalyzeIt is not installed. Install it with: curl -fsSL https://www.analyzeit.si/install.sh | sh  (then restart Claude)" >&2
+  echo "AnalyzeIt is not installed. Install it from https://www.analyzeit.si/download (then restart Claude)" >&2
   exit 1
 fi
 
 have="$("$bin" --version 2>/dev/null | sed -n 's/^analyzeit \([0-9][0-9.]*\).*/\1/p' | head -n 1)"
 if [ -z "$have" ]; then
-  echo "Could not read the version of $bin. Reinstall AnalyzeIt: curl -fsSL https://www.analyzeit.si/install.sh | sh" >&2
+  echo "Could not read the version of $bin. Reinstall AnalyzeIt from https://www.analyzeit.si/download" >&2
   exit 1
 fi
 oldest="$(printf '%s\n%s\n' "$MIN" "$have" | sort -t. -k1,1n -k2,2n -k3,3n | head -n 1)"

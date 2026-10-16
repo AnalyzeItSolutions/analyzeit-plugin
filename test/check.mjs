@@ -25,7 +25,7 @@ assert.ok(statSync(script).mode & 0o111, "launcher is executable");
 const sh = readFileSync(script, "utf8");
 assert.match(sh, /^#!\/bin\/sh/);
 assert.match(sh, /exec "\$bin" mcp$/m);
-assert.ok(!/\b(npx|uvx|pipx|curl|wget)\b(?! -fsSL https:\/\/www\.analyzeit\.si\/install\.sh)/.test(sh), "launcher downloads and installs nothing");
+assert.ok(!/\b(npx|uvx|pipx|curl|wget)\b/.test(sh), "launcher downloads and installs nothing");
 const gate = (v) => spawnSync("sh", [script], { env: { PATH: "/usr/bin:/bin", HOME: "/nonexistent", ANALYZEIT_BIN: fake(v) }, encoding: "utf8" });
 const tmp = mkdtempSync(join(tmpdir(), "azplug-"));
 function fake(v) {
