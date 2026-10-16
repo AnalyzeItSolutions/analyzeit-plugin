@@ -1,10 +1,7 @@
 {
   "mcpServers": {
     "analyzeit": {
-      "command": "analyzeit",
-      "args": [
-        "mcp"
-      ]
+      "command": "${CLAUDE_PLUGIN_ROOT}/scripts/analyzeit-mcp.sh"
     }
   }
 }

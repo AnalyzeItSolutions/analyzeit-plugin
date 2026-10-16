@@ -6,18 +6,18 @@ Ask Claude about the data on your computer **without the data leaving it.**
 curl -fsSL https://www.analyzeit.si/install.sh | sh
 ```
 
-The installer puts the `analyzeit` command on your computer, verifies it, and registers it with Claude (Claude Code and Claude Desktop, when present). Then:
+The installer puts the `analyzeit` command (0.5.1 or newer) on your computer, verifies it, and registers it with Claude (Claude Code and Claude Desktop, when present). Then:
 
 ```
 analyzeit data import sales.csv          # or: analyzeit connect ~/Reports
 analyzeit data share sales on            # lets Claude see computed results of this dataset
 ```
 
-Ask Claude "which regions sold most last quarter?" or use `/analyzeit:analyze top 5 regions by revenue`.
+Ask Claude "which regions sold most last quarter?" or use `/analyzeit:analyze top 5 regions by revenue`, `/analyzeit:overview sales` (a short briefing) or `/analyzeit:status` (is it set up?).
 
 ## How it works
 
-This plugin is a thin layer: it starts `analyzeit mcp` (a tool server over stdio, part of the command line program). That program answers from your encrypted local vault and runs the analysis on your computer. It works with no network.
+This plugin is a thin layer: a small launcher script (`analyzeit/scripts/analyzeit-mcp.sh`, which checks the command is installed and new enough) starts `analyzeit mcp` (a tool server over stdio, part of the command line program). That program answers from your encrypted local vault and runs the analysis on your computer. It works with no network.
 
 | Tool | What Claude gets |
 |---|---|
@@ -43,4 +43,4 @@ Data kept in your AnalyzeIt *account* can also be reached through the hosted con
 
 ## Develop
 
-`node test/check.mjs` validates the manifests, checks that the server is the local command (no URL, no tokens) and scans the package for secrets.
+`node test/check.mjs` validates the manifests, the directory-listing requirements (README, license, icon, no stray files), the launcher (including its version gate) and scans the package for secrets. `claude plugin validate . --strict` and `claude plugin validate ./analyzeit --strict` must also pass.

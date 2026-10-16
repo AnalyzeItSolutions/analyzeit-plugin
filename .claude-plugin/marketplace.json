@@ -1,7 +1,9 @@
 {
   "name": "analyzeit",
+  "description": "AnalyzeIt: ask Claude about your own data while the data stays on your computer.",
   "owner": {
-    "name": "AnalyzeIt"
+    "name": "AnalyzeIt",
+    "url": "https://www.analyzeit.si"
   },
   "plugins": [
     {

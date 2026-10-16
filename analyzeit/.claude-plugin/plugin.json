@@ -1,15 +1,19 @@
 {
   "name": "analyzeit",
-  "version": "0.7.0",
-  "description": "Ask Claude about your data without it leaving your computer. A thin layer over the analyzeit command: analyses run on your device and Claude receives computed results only, never rows.",
+  "displayName": "AnalyzeIt",
+  "version": "0.8.0",
+  "description": "Ask Claude about your data without it leaving your computer. Analyses run on your device through the analyzeit command; Claude receives computed results only, never rows.",
   "author": {
-    "name": "AnalyzeIt"
+    "name": "AnalyzeIt",
+    "url": "https://www.analyzeit.si"
   },
-  "keywords": [
-    "analytics",
-    "data",
-    "mcp",
-    "local",
-    "privacy"
-  ]
+  "homepage": "https://www.analyzeit.si",
+  "repository": "https://github.com/AnalyzeItTech/analyzeit-connector",
+  "license": "MIT",
+  "keywords": ["analytics", "data", "csv", "excel", "forecast", "local", "privacy", "mcp"],
+  "icon": "./icon.png",
+  "documentationUrl": "https://www.analyzeit.si/docs",
+  "supportUrl": "https://www.analyzeit.si/contact",
+  "privacyPolicyUrl": "https://www.analyzeit.si/privacy",
+  "termsOfServiceUrl": "https://www.analyzeit.si/terms"
 }
