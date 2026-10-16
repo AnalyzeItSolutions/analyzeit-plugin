@@ -8,7 +8,7 @@
     "url": "https://www.analyzeit.si"
   },
   "homepage": "https://www.analyzeit.si",
-  "repository": "https://github.com/AnalyzeItTech/analyzeit-connector",
+  "repository": "https://github.com/AnalyzeItTech/analyzeit-plugin",
   "license": "MIT",
   "keywords": ["analytics", "data", "csv", "excel", "forecast", "local", "privacy", "mcp"],
   "icon": "./icon.png",

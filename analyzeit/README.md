@@ -38,7 +38,7 @@ Built-in analyses: summary, top groups, totals/averages/medians (overall or by g
 ## Install the plugin
 
 ```
-claude plugin marketplace add AnalyzeItTech/analyzeit-connector
+claude plugin marketplace add AnalyzeItTech/analyzeit-plugin
 claude plugin install analyzeit@analyzeit
 ```
 

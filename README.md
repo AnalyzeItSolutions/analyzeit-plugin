@@ -32,7 +32,7 @@ What Claude is told is sent to Anthropic like anything you type into Claude. Tha
 ## Manual install
 
 ```
-claude plugin marketplace add AnalyzeItTech/analyzeit-connector
+claude plugin marketplace add AnalyzeItTech/analyzeit-plugin
 claude plugin install analyzeit@analyzeit
 ```
 or without the plugin: `claude mcp add --scope user analyzeit -- analyzeit mcp`. Claude Desktop: add `"analyzeit": {"command": "analyzeit", "args": ["mcp"]}` under `mcpServers` in `claude_desktop_config.json`.
