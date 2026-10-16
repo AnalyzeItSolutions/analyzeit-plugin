@@ -22,7 +22,8 @@ This plugin is a thin layer: a small launcher script (`analyzeit/scripts/analyze
 | Tool | What Claude gets |
 |---|---|
 | `list_datasets` | Names, row counts, column names and types of the datasets **you allowed** |
-| `analyze` | A computed result of a built-in analysis: summary, top groups, trend, forecast, outlier counts, drivers |
+| `analyze` | A computed result of a built-in analysis, asked in plain words |
+| `summary`, `top_groups`, `trend`, `forecast`, `find_outliers`, `drivers`, `compare_groups` | The same results-only analyses with named inputs (dataset, column, measure), so Claude does not have to phrase a question. Names are checked: letters, digits, spaces, `_ . -` only |
 | `privacy_policy` | What stays on your computer and what may leave it |
 
 There is **no** tool that returns rows, runs SQL or reads files. That is enforced in the program (`core/src/egress.rs`), not by asking Claude to behave: private datasets return nothing; columns that are nearly unique per row (ids, names, emails) cannot be grouped by; groups of fewer than 3 records are left out; tables are capped at 50 rows and cells at 80 characters. Tests use planted canary values and a stub server to prove none reach the output.
