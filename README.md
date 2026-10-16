@@ -24,6 +24,8 @@ This plugin is a thin layer: a small launcher script (`analyzeit/scripts/analyze
 | `list_datasets` | Names, row counts, column names and types of the datasets **you allowed** |
 | `analyze` | A computed result of a built-in analysis, asked in plain words |
 | `summary`, `top_groups`, `trend`, `forecast`, `find_outliers`, `drivers`, `compare_groups` | The same results-only analyses with named inputs (dataset, column, measure), so Claude does not have to phrase a question. Names are checked: letters, digits, spaces, `_ . -` only |
+| `propose_browser_task`, `browser_task_status` | Claude plans steps for **your own signed-in browser** (read your X or LinkedIn profile, put a post you gave it in the box). You approve them on AnalyzeIt, then in the browser extension's own window; if you are signed out it waits while you sign in. Needs `analyzeit login`, CLI 0.6.1+ |
+| `draft_post` | Saves a post in your Drafts in your voice. Nothing is posted |
 | `privacy_policy` | What stays on your computer and what may leave it |
 
 There is **no** tool that returns rows, runs SQL or reads files. That is enforced in the program (`core/src/egress.rs`), not by asking Claude to behave: private datasets return nothing; columns that are nearly unique per row (ids, names, emails) cannot be grouped by; groups of fewer than 3 records are left out; tables are capped at 50 rows and cells at 80 characters. Tests use planted canary values and a stub server to prove none reach the output.
