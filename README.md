@@ -24,6 +24,7 @@ This plugin is a thin layer: a small launcher script (`analyzeit/scripts/analyze
 | `list_datasets` | Names, row counts, column names and types of the datasets **you allowed** |
 | `analyze` | A computed result of a built-in analysis, asked in plain words |
 | `summary`, `top_groups`, `trend`, `forecast`, `find_outliers`, `drivers`, `compare_groups` | The same results-only analyses with named inputs (dataset, column, measure), so Claude does not have to phrase a question. Names are checked: letters, digits, spaces, `_ . -` only |
+| `browser_open`, `browser_snapshot`, `browser_act` | Claude works in **your own signed-in browser on any website**: open a page, read it, click, type, press keys, scroll. Goes straight to the AnalyzeIt extension on your computer (no website). Sign-in is always yours; Post/Send/Buy/Delete-style clicks show an Allow/Deny box on the page. Needs CLI 0.6.1+ and `analyzeit extension connect` |
 | `propose_browser_task`, `browser_task_status` | Claude plans steps for **your own signed-in browser** (read your X or LinkedIn profile, put a post you gave it in the box). You approve them on AnalyzeIt, then in the browser extension's own window; if you are signed out it waits while you sign in. Needs `analyzeit login`, CLI 0.6.1+ |
 | `draft_post` | Saves a post in your Drafts in your voice. Nothing is posted |
 | `privacy_policy` | What stays on your computer and what may leave it |
