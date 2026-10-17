@@ -8,10 +8,10 @@
       }
     ],
     "PreCompact": [
-      { "hooks": [{ "type": "command", "command": "analyzeit memory hook pre-compact 2>/dev/null || true", "timeout": 12 }] }
+      { "hooks": [{ "type": "command", "command": "analyzeit memory hook pre-compact 2>/dev/null || true", "timeout": 45 }] }
     ],
     "SessionEnd": [
-      { "hooks": [{ "type": "command", "command": "analyzeit memory hook session-end 2>/dev/null || true", "timeout": 12 }] }
+      { "hooks": [{ "type": "command", "command": "analyzeit memory hook session-end 2>/dev/null || true", "timeout": 45 }] }
     ]
   }
 }
