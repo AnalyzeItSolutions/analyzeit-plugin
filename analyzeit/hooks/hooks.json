@@ -4,14 +4,14 @@
     "SessionStart": [
       {
         "matcher": "startup|resume|clear|compact",
-        "hooks": [{ "type": "command", "command": "analyzeit memory hook session-start 2>/dev/null || true", "timeout": 8 }]
+        "hooks": [{ "type": "command", "command": "analyzeit memory hook session-start 2>/dev/null || true", "timeout": 12 }]
       }
     ],
     "PreCompact": [
-      { "hooks": [{ "type": "command", "command": "analyzeit memory hook pre-compact 2>/dev/null || true", "timeout": 8 }] }
+      { "hooks": [{ "type": "command", "command": "analyzeit memory hook pre-compact 2>/dev/null || true", "timeout": 12 }] }
     ],
     "SessionEnd": [
-      { "hooks": [{ "type": "command", "command": "analyzeit memory hook session-end 2>/dev/null || true", "timeout": 8 }] }
+      { "hooks": [{ "type": "command", "command": "analyzeit memory hook session-end 2>/dev/null || true", "timeout": 12 }] }
     ]
   }
 }
