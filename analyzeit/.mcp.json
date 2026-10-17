@@ -2,6 +2,10 @@
   "mcpServers": {
     "analyzeit": {
       "command": "${CLAUDE_PLUGIN_ROOT}/scripts/analyzeit-mcp.sh"
+    },
+    "analyzeit-cloud": {
+      "type": "http",
+      "url": "https://backend-qwiq.onrender.com/mcp"
     }
   }
 }
