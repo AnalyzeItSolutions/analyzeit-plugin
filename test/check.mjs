@@ -64,10 +64,15 @@ for (const c of ["analyze", "overview", "status"]) assert.ok(statSync(join(root,
 
 const agent = readFileSync(join(root, "analyzeit/agents/analyzeit-analyst.md"), "utf8");
 assert.match(agent, /^tools: mcp__plugin_analyzeit_analyzeit__\*$/m, "the sub-agent is limited to the AnalyzeIt tools");
-for (const f of ["analyzeit/skills/analyzeit/SKILL.md", "analyzeit/agents/analyzeit-analyst.md", "analyzeit/commands/analyze.md", "analyzeit/README.md", "README.md"]) {
+for (const f of ["analyzeit/agents/analyzeit-analyst.md", "analyzeit/commands/analyze.md"]) {
   const t = readFileSync(join(root, f), "utf8");
   assert.ok(!/backend-qwiq|onrender\.com|Authenticate/.test(t), `${f} still refers to the hosted connector`);
 }
+// The hosted server is declared, so it must be disclosed where users and the directory scan look.
+const hosted = json("analyzeit/.mcp.json").mcpServers["analyzeit-cloud"];
+assert.ok(hosted && hosted.url, "hosted server is declared");
+const host = new URL(hosted.url).host;
+for (const f of ["analyzeit/README.md", "SECURITY.md", "analyzeit/.claude-plugin/plugin.json"]) assert.ok(readFileSync(join(root, f), "utf8").includes(host), `${f} discloses ${host}`);
 const tools = [...agent.matchAll(/`(list_datasets|analyze|privacy_policy)`/g)].map((m) => m[1]);
 assert.ok(tools.length >= 3, "the analyst names the CLI's tools");
 assert.ok(!/query_records|propose_import|request_access|create_project/.test(agent), "the analyst names no hosted-connector tools");

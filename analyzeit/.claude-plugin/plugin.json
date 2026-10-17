@@ -1,8 +1,8 @@
 {
   "name": "analyzeit",
   "displayName": "AnalyzeIt",
-  "version": "0.11.0",
-  "description": "Ask Claude about your data without it leaving your computer. Analyses run on your device through the analyzeit command; Claude receives computed results only, never rows.",
+  "version": "0.11.1",
+  "description": "Ask Claude about your data without it leaving your computer. Analyses run on your device through the analyzeit command; Claude receives computed results only, never rows. A second, optional hosted AnalyzeIt server (backend-qwiq.onrender.com, sign-in required) handles calculations and questions you send it; see the README.",
   "author": {
     "name": "AnalyzeIt",
     "url": "https://www.analyzeit.si"
