@@ -1,6 +1,6 @@
 # Security
 
-This repository is a thin package: it starts the `analyzeit` command (`analyzeit mcp`), an analyst sub-agent and documentation. Analyses of local datasets run on the user's computer. The plugin also registers one hosted, sign-in-protected AnalyzeIt MCP server (`analyzeit-cloud`, `https://backend-qwiq.onrender.com/mcp`) for calculations, `ask` and account memory; it receives only what the user asks it, never local datasets, and can be removed with `claude mcp remove analyzeit-cloud`.
+This repository is a thin package: it starts the `analyzeit` command (`analyzeit mcp`), an analyst sub-agent and documentation. Analyses of local datasets run on the user's computer. The plugin also registers one hosted, sign-in-protected AnalyzeIt MCP server (`analyzeit-cloud`, `https://api.analyzeit.si/mcp`) for calculations, `ask` and account memory; it receives only what the user asks it, never local datasets, and can be removed with `claude mcp remove analyzeit-cloud`.
 
 ## Reporting a vulnerability
 

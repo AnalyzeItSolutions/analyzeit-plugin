@@ -5,7 +5,7 @@
     },
     "analyzeit-cloud": {
       "type": "http",
-      "url": "https://backend-qwiq.onrender.com/mcp"
+      "url": "https://api.analyzeit.si/mcp"
     }
   }
 }

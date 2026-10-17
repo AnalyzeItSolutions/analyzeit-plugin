@@ -5,7 +5,7 @@
 You need an assistant that supports **remote MCP servers with sign-in (OAuth)**. The address is always:
 
 ```
-https://backend-qwiq.onrender.com/mcp
+https://api.analyzeit.si/mcp
 ```
 
 The first time, your browser opens the AnalyzeIt website. Sign in, check the app name and the address it will send you back to, and click **Allow**. If you did not just start the connection yourself, click Cancel.
@@ -15,7 +15,7 @@ Menu names change between app versions; if yours differs, look for "connectors",
 ## Claude
 
 - **Claude Code (plugin, recommended):** `claude plugin marketplace add AnalyzeItTech/analyzeit-plugin`, `claude plugin install analyzeit@analyzeit`, then `/mcp` → analyzeit → Authenticate.
-- **Claude Code (server only):** `claude mcp add --transport http analyzeit https://backend-qwiq.onrender.com/mcp`, then `/mcp` → Authenticate.
+- **Claude Code (server only):** `claude mcp add --transport http analyzeit https://api.analyzeit.si/mcp`, then `/mcp` → Authenticate.
 - **Claude on the web / desktop:** Settings → Connectors → add a custom connector → paste the address.
 
 ## ChatGPT
