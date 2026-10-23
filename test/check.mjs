@@ -63,7 +63,7 @@ assert.ok(readme.includes(min), "the README states the minimum command version")
 for (const c of ["analyze", "overview", "status"]) assert.ok(statSync(join(root, `analyzeit/commands/${c}.md`)).isFile(), `command ${c} exists`);
 
 const agent = readFileSync(join(root, "analyzeit/agents/analyzeit-analyst.md"), "utf8");
-assert.match(agent, /^tools: mcp__plugin_analyzeit_analyzeit__\*$/m, "the sub-agent is limited to the AnalyzeIt tools");
+assert.match(agent, /^tools: mcp__plugin_analyzeit_analyzeit__\*, mcp__plugin_analyzeit_analyzeit-cloud__\*$/m, "the sub-agent is limited to the AnalyzeIt tools (local and hosted)");
 for (const f of ["analyzeit/agents/analyzeit-analyst.md", "analyzeit/commands/analyze.md"]) {
   const t = readFileSync(join(root, f), "utf8");
   assert.ok(!/backend-qwiq|onrender\.com|Authenticate/.test(t), `${f} still refers to the hosted connector`);
@@ -75,7 +75,9 @@ const host = new URL(hosted.url).host;
 for (const f of ["analyzeit/README.md", "SECURITY.md", "analyzeit/.claude-plugin/plugin.json"]) assert.ok(readFileSync(join(root, f), "utf8").includes(host), `${f} discloses ${host}`);
 const tools = [...agent.matchAll(/`(list_datasets|analyze|privacy_policy)`/g)].map((m) => m[1]);
 assert.ok(tools.length >= 3, "the analyst names the CLI's tools");
-assert.ok(!/query_records|propose_import|request_access|create_project/.test(agent), "the analyst names no hosted-connector tools");
+// Online data goes through the hosted named analyses (results only); rows are a last resort and approvals are the user's.
+assert.ok(/prefer them to `query_records`/.test(agent), "the analyst prefers results-only analyses to reading rows");
+assert.ok(/request_access/.test(agent) && /link/.test(agent), "the analyst hands access to the user by link");
 
 // Nothing that looks like a secret or a local path, anywhere in the package.
 const patterns = [/sk-[A-Za-z0-9]{20,}/, /AKIA[0-9A-Z]{16}/, /-----BEGIN [A-Z ]*PRIVATE KEY-----/, /Bearer [A-Za-z0-9._-]{20,}/, /aza[crt]_[A-Za-z0-9_-]{20,}/, /mongodb(\+srv)?:\/\//, /\/Users\/[a-z]/i, /[\w.+-]+@(gmail|outlook|yahoo)\.com/i];
