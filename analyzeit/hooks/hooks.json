@@ -1,17 +1,50 @@
 {
-  "description": "AnalyzeIt memory across sessions: recall what is known about this folder when a session starts; with auto-save on (analyzeit memory autosave on), keep a short note when a session is compacted or ends. Every hook stays silent and never blocks when you are signed out, offline, or on an older analyzeit.",
+  "description": "AnalyzeIt memory across sessions: recall what is known about this folder when a session starts; with auto-save on (analyzeit memory autosave on), keep a short note when a session is compacted or ends. Every hook stays silent and never blocks when you are signed out, offline, or on an older analyzeit. Before each message, a data question about a dataset you shared is answered on your computer (computed results only) and added as context, so the assistant answers in one step without reading the file.",
   "hooks": {
     "SessionStart": [
       {
         "matcher": "startup|resume|clear|compact",
-        "hooks": [{ "type": "command", "command": "analyzeit memory hook session-start 2>/dev/null || true", "timeout": 12 }]
+        "hooks": [
+          {
+            "type": "command",
+            "command": "analyzeit memory hook session-start 2>/dev/null || true",
+            "timeout": 12
+          }
+        ]
       }
     ],
     "PreCompact": [
-      { "hooks": [{ "type": "command", "command": "analyzeit memory hook pre-compact 2>/dev/null || true", "timeout": 45 }] }
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "analyzeit memory hook pre-compact 2>/dev/null || true",
+            "timeout": 45
+          }
+        ]
+      }
     ],
     "SessionEnd": [
-      { "hooks": [{ "type": "command", "command": "analyzeit memory hook session-end 2>/dev/null || true", "timeout": 45 }] }
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "analyzeit memory hook session-end 2>/dev/null || true",
+            "timeout": 45
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/prompt-hook.sh\" 2>/dev/null || true",
+            "timeout": 15
+          }
+        ]
+      }
     ]
   }
 }
