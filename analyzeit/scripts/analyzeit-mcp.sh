@@ -29,4 +29,5 @@ if [ "$oldest" != "$MIN" ]; then
   exit 1
 fi
 
-exec "$bin" mcp
+# This plugin also connects to the hosted server (analyzeit-cloud), so the local server does not list the online tools a second time.
+ANALYZEIT_MCP_ONLINE=off exec "$bin" mcp
