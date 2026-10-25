@@ -21,6 +21,8 @@ This plugin is a thin layer: a small launcher script (`analyzeit/scripts/analyze
 
 **Cloud compute (optional, off by default).** `analyzeit compute cloud` moves the analysis to AnalyzeIt's compute service: for each question, only the columns that analysis needs are sent over HTTPS, analysed in memory and not stored or logged, and the result is saved on your computer (`results.jsonl`). Your data stays stored on your computer either way, and the same results-only rules apply in the service. If the service cannot be reached, the analysis runs locally. `analyzeit compute device` turns it off.
 
+**Reports of what AnalyzeIt could not answer.** When a question falls back to Claude (the hook could not read it, a tool refused, or Claude read the file anyway), `analyzeit misses` lists it on your computer. When you are signed in, a report also goes to the AnalyzeIt team so the missing analysis can be built: the reason, the question with your data's values masked, the dataset's row count and column names and types, and the program version. No rows. `analyzeit misses share full` adds the question as written; `analyzeit misses share off` sends nothing. Reports are kept 180 days and never used to train models.
+
 | Tool | What Claude gets |
 |---|---|
 | `list_datasets` | Names, row counts, column names and types of the datasets **you allowed** |
