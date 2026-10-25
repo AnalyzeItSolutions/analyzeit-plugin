@@ -41,6 +41,17 @@ claude plugin install analyzeit@analyzeit
 ```
 or without the plugin: `claude mcp add --scope user analyzeit -- analyzeit mcp`. Claude Desktop: add `"analyzeit": {"command": "analyzeit", "args": ["mcp"]}` under `mcpServers` in `claude_desktop_config.json`.
 
+## Codex
+
+The same folder is a Codex plugin (`analyzeit/.codex-plugin/plugin.json`, marketplace in `.agents/plugins/marketplace.json`). It
+uses the same hooks file and the same scripts, and needs analyzeit 0.9.0 or newer for the hooks (older versions are skipped).
+
+- Add this repository (or a local copy) as a plugin marketplace in Codex and enable **AnalyzeIt**.
+- Codex runs a plugin's hooks only after you trust them: open `/hooks` in Codex and trust the AnalyzeIt ones.
+- The prompt hook answers a data question about a dataset you shared before the model is called; the tool hook notes when the
+  assistant read a dataset's file anyway. `analyzeit misses` lists those, on your computer only.
+- In Codex the local server also offers your online AnalyzeIt projects when you are signed in (`analyzeit login`).
+
 ## Online projects (optional)
 
 Data kept in your AnalyzeIt *account* can also be reached through the hosted connector for assistants that cannot run local programs: see [docs/hosted-connector.md](docs/hosted-connector.md).

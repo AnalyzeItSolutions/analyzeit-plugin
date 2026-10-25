@@ -1,0 +1,42 @@
+{
+  "version": "0.14.0",
+  "name": "analyzeit",
+  "description": "Ask about your data without it leaving your computer. Analyses run on your device through the analyzeit command; the assistant receives computed results only, never rows. Before each message, a data question about a dataset you shared is answered on your computer and added as context.",
+  "author": {
+    "name": "AnalyzeIt",
+    "url": "https://www.analyzeit.si"
+  },
+  "homepage": "https://www.analyzeit.si",
+  "repository": "https://github.com/AnalyzeItTech/analyzeit-plugin",
+  "license": "MIT",
+  "keywords": [
+    "analytics",
+    "data",
+    "csv",
+    "excel",
+    "forecast",
+    "local",
+    "privacy",
+    "mcp"
+  ],
+  "mcpServers": "./.codex-mcp.json",
+  "hooks": "./hooks/hooks.json",
+  "interface": {
+    "displayName": "AnalyzeIt",
+    "shortDescription": "Answers about your data, computed on your device",
+    "longDescription": "AnalyzeIt runs analyses (totals, trends, comparisons, cohorts, funnels, forecasts, drivers) on datasets kept in its encrypted vault on your computer. Codex gets computed results only, never rows. Its prompt hook answers a data question before the model is called, so most questions take one step.",
+    "developerName": "AnalyzeIt",
+    "category": "Data",
+    "capabilities": [
+      "Read"
+    ],
+    "websiteURL": "https://www.analyzeit.si",
+    "privacyPolicyURL": "https://www.analyzeit.si/privacy",
+    "termsOfServiceURL": "https://www.analyzeit.si/terms",
+    "defaultPrompt": [
+      "What datasets can you analyse?",
+      "Which region has the highest total amount in orders?"
+    ],
+    "logo": "./icon.png"
+  }
+}

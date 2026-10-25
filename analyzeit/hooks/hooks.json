@@ -40,8 +40,20 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/prompt-hook.sh\" 2>/dev/null || true",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/prompt-hook.sh\" prompt 2>/dev/null || true",
             "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash|Read|Grep|shell|exec_command|local_shell|read_file",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/prompt-hook.sh\" tool 2>/dev/null || true",
+            "timeout": 5
           }
         ]
       }

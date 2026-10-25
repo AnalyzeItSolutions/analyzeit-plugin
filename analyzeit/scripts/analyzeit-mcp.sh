@@ -29,5 +29,9 @@ if [ "$oldest" != "$MIN" ]; then
   exit 1
 fi
 
-# This plugin also connects to the hosted server (analyzeit-cloud), so the local server does not list the online tools a second time.
+# In Claude the plugin also connects to the hosted server (analyzeit-cloud), so the local server does not list the online tools a
+# second time. Codex has no hosted server in the plugin and passes --with-online, so a signed-in person gets them from here.
+if [ "${1:-}" = "--with-online" ]; then
+  exec "$bin" mcp
+fi
 ANALYZEIT_MCP_ONLINE=off exec "$bin" mcp

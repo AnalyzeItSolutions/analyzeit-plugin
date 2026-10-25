@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "analyzeit": {
+      "command": "/bin/sh",
+      "args": [
+        "-c",
+        "exec ./scripts/analyzeit-mcp.sh --with-online"
+      ],
+      "cwd": ".",
+      "env_vars": [
+        "PATH",
+        "HOME",
+        "ANALYZEIT_BIN",
+        "ANALYZEIT_HOME"
+      ],
+      "tool_timeout_sec": 120
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "analyzeit",
+  "interface": {
+    "displayName": "AnalyzeIt"
+  },
+  "plugins": [
+    {
+      "name": "analyzeit",
+      "source": {
+        "source": "local",
+        "path": "./analyzeit"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Data"
+    }
+  ]
+}
