@@ -14,7 +14,7 @@ Menu names change between app versions; if yours differs, look for "connectors",
 
 ## Claude
 
-- **Claude Code (plugin, recommended):** `claude plugin marketplace add AnalyzeItTech/analyzeit-plugin`, `claude plugin install analyzeit@analyzeit`, then `/mcp` → analyzeit → Authenticate.
+- **Claude Code (plugin, recommended):** `claude plugin marketplace add AnalyzeItSolutions/analyzeit-plugin`, `claude plugin install analyzeit@analyzeit`, then `/mcp` → analyzeit → Authenticate.
 - **Claude Code (server only):** `claude mcp add --transport http analyzeit https://api.analyzeit.si/mcp`, then `/mcp` → Authenticate.
 - **Claude on the web / desktop:** Settings → Connectors → add a custom connector → paste the address.
 
