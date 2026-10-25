@@ -2,7 +2,7 @@
   "name": "analyzeit",
   "displayName": "AnalyzeIt",
   "version": "0.14.0",
-  "description": "Ask Claude about your data without it leaving your computer. Analyses run on your device through the analyzeit command; Claude receives computed results only, never rows. A second, optional hosted AnalyzeIt server (api.analyzeit.si, sign-in required) handles calculations and questions you send it; see the README.",
+  "description": "Ask about your data while it stays stored on your computer. The assistant receives computed results only, never rows. Analyses run on your device, or, if you turn on cloud compute, in AnalyzeIt's compute service (compute.analyzeit.si), which receives only the columns a question needs, keeps nothing and returns the result to your computer. Before each message a data question about a dataset you shared is answered and added as context. A second, optional hosted AnalyzeIt server (api.analyzeit.si, sign-in required) handles calculations and questions you send it; see the README.",
   "author": {
     "name": "AnalyzeIt",
     "url": "https://www.analyzeit.si"
@@ -10,7 +10,16 @@
   "homepage": "https://www.analyzeit.si",
   "repository": "https://github.com/AnalyzeItTech/analyzeit-plugin",
   "license": "MIT",
-  "keywords": ["analytics", "data", "csv", "excel", "forecast", "local", "privacy", "mcp"],
+  "keywords": [
+    "analytics",
+    "data",
+    "csv",
+    "excel",
+    "forecast",
+    "local",
+    "privacy",
+    "mcp"
+  ],
   "icon": "./icon.png",
   "documentationUrl": "https://www.analyzeit.si/docs",
   "supportUrl": "https://www.analyzeit.si/contact",

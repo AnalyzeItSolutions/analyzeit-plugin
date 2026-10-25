@@ -1,6 +1,6 @@
 # AnalyzeIt for Claude
 
-Ask Claude about the data on your computer **without the data leaving it.**
+Ask Claude about the data on your computer. **Your data stays stored on your computer**, and Claude only ever gets computed results, never rows.
 
 ```
 curl -fsSL https://www.analyzeit.si/install.sh | sh
@@ -17,7 +17,9 @@ Ask Claude "which regions sold most last quarter?" or use `/analyzeit:analyze to
 
 ## How it works
 
-This plugin is a thin layer: a small launcher script (`analyzeit/scripts/analyzeit-mcp.sh`, which checks the command is installed and new enough) starts `analyzeit mcp` (a tool server over stdio, part of the command line program). That program answers from your encrypted local vault and runs the analysis on your computer. It works with no network.
+This plugin is a thin layer: a small launcher script (`analyzeit/scripts/analyzeit-mcp.sh`, which checks the command is installed and new enough) starts `analyzeit mcp` (a tool server over stdio, part of the command line program). That program answers from your encrypted local vault. By default it runs the analysis on your computer and works with no network.
+
+**Cloud compute (optional, off by default).** `analyzeit compute cloud` moves the analysis to AnalyzeIt's compute service: for each question, only the columns that analysis needs are sent over HTTPS, analysed in memory and not stored or logged, and the result is saved on your computer (`results.jsonl`). Your data stays stored on your computer either way, and the same results-only rules apply in the service. If the service cannot be reached, the analysis runs locally. `analyzeit compute device` turns it off.
 
 | Tool | What Claude gets |
 |---|---|
@@ -27,7 +29,7 @@ This plugin is a thin layer: a small launcher script (`analyzeit/scripts/analyze
 | `browser_open`, `browser_snapshot`, `browser_act` | Claude works in **your own signed-in browser on any website**: open a page, read it, click, type, press keys, scroll. Goes straight to the AnalyzeIt extension on your computer (no website). Sign-in is always yours; Post/Send/Buy/Delete-style clicks show an Allow/Deny box on the page. Needs CLI 0.6.1+ and `analyzeit extension connect` |
 | `propose_browser_task`, `browser_task_status` | Claude plans steps for **your own signed-in browser** (read your X or LinkedIn profile, put a post you gave it in the box). You approve them on AnalyzeIt, then in the browser extension's own window; if you are signed out it waits while you sign in. Needs `analyzeit login`, CLI 0.6.1+ |
 | `draft_post` | Saves a post in your Drafts in your voice. Nothing is posted |
-| `privacy_policy` | What stays on your computer and what may leave it |
+| `privacy_policy` | What is stored on your computer, what may be processed by the compute service, and what reaches Claude |
 
 There is **no** tool that returns rows, runs SQL or reads files. That is enforced in the program (`core/src/egress.rs`), not by asking Claude to behave: private datasets return nothing; columns that are nearly unique per row (ids, names, emails) cannot be grouped by; groups of fewer than 3 records are left out; tables are capped at 50 rows and cells at 80 characters. Tests use planted canary values and a stub server to prove none reach the output.
 

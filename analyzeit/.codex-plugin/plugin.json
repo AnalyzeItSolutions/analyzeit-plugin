@@ -1,7 +1,7 @@
 {
   "version": "0.14.0",
   "name": "analyzeit",
-  "description": "Ask about your data without it leaving your computer. Analyses run on your device through the analyzeit command; the assistant receives computed results only, never rows. Before each message, a data question about a dataset you shared is answered on your computer and added as context.",
+  "description": "Ask about your data while it stays stored on your computer. The assistant receives computed results only, never rows. Analyses run on your device, or, if you turn on cloud compute, in AnalyzeIt's compute service (compute.analyzeit.si), which receives only the columns a question needs, keeps nothing and returns the result to your computer. Before each message a data question about a dataset you shared is answered and added as context.",
   "author": {
     "name": "AnalyzeIt",
     "url": "https://www.analyzeit.si"
@@ -24,7 +24,7 @@
   "interface": {
     "displayName": "AnalyzeIt",
     "shortDescription": "Answers about your data, computed on your device",
-    "longDescription": "AnalyzeIt runs analyses (totals, trends, comparisons, cohorts, funnels, forecasts, drivers) on datasets kept in its encrypted vault on your computer. Codex gets computed results only, never rows. Its prompt hook answers a data question before the model is called, so most questions take one step.",
+    "longDescription": "AnalyzeIt runs analyses (totals, trends, comparisons, cohorts, funnels, forecasts, drivers) on datasets kept in its encrypted vault on your computer. The assistant gets computed results only, never rows. Analyses run on your device by default; with cloud compute on, only the columns one question needs are sent, processed in memory and not stored. Its prompt hook answers a data question before the model is called, so most questions take one step.",
     "developerName": "AnalyzeIt",
     "category": "Data",
     "capabilities": [
