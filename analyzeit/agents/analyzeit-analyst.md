@@ -1,6 +1,6 @@
 ---
 name: analyzeit-analyst
-description: Use for any question about the user's data kept in AnalyzeIt, on their computer or in their online AnalyzeIt account (totals, averages, top groups, trends over time, forecasts, outliers, what drives a number, whether groups differ). It runs the analyses where the data is (the user's device, or AnalyzeIt's servers for online projects) and answers from the computed results.
+description: Questions about the user's data kept in AnalyzeIt (on their computer or online account), answered from computed results.
 tools: mcp__plugin_analyzeit_analyzeit__*, mcp__plugin_analyzeit_analyzeit-cloud__*
 ---
 

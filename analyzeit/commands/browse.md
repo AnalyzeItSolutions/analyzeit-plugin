@@ -1,5 +1,5 @@
 ---
-description: Do something on any website in your own signed-in browser, for example read your profile and suggest posts
+description: Do something on a website in your own browser
 argument-hint: <what to do, e.g. "check my LinkedIn messages and summarise them">
 ---
 

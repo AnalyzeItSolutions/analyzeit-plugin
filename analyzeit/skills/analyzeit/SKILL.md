@@ -1,6 +1,6 @@
 ---
 name: analyzeit
-description: How to work with AnalyzeIt from Claude. Use when the user mentions AnalyzeIt, their local datasets, or asks to total, group, trend, forecast, compare or check data kept in AnalyzeIt on their computer.
+description: Working with data kept in AnalyzeIt (the user's local datasets): totals, groups, trends, forecasts, comparisons.
 ---
 
 # Working with AnalyzeIt

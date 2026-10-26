@@ -1,5 +1,5 @@
 ---
-description: A short briefing on one local dataset - summary, top groups, trend, outliers and drivers
+description: A short briefing on one dataset
 argument-hint: <dataset name>
 ---
 

@@ -1,5 +1,5 @@
 ---
-description: Ask a question about your local AnalyzeIt data (uses the analyzeit-analyst sub-agent)
+description: Ask about your AnalyzeIt data
 argument-hint: <question>
 ---
 

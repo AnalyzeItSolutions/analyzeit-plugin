@@ -1,5 +1,5 @@
 ---
-description: Check that AnalyzeIt is installed and which of your datasets Claude may analyse
+description: AnalyzeIt install and shared datasets
 ---
 
 Check the AnalyzeIt setup for the user.

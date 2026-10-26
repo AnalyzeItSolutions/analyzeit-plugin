@@ -1,7 +1,7 @@
 {
   "name": "analyzeit",
   "displayName": "AnalyzeIt",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "description": "Ask about your data while it stays stored on your computer. The assistant receives computed results only, never rows. Analyses run on your device, or, if you turn on cloud compute, in AnalyzeIt's compute service (compute.analyzeit.si), which receives only the columns a question needs, keeps nothing and returns the result to your computer. Before each message a data question about a dataset you shared is answered and added as context. A second, optional hosted AnalyzeIt server (api.analyzeit.si, sign-in required) handles calculations and questions you send it; see the README.",
   "author": {
     "name": "AnalyzeIt",
