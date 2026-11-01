@@ -19,8 +19,8 @@ if [ -z "$bin" ]; then
     v="$(version_of "$c")"
     [ -n "$v" ] || continue
     oldest_seen="$v"
-    # new enough, and newer than the best so far (the first of equal versions is kept)
-    if newer_or_equal "$v" "$MIN" && { [ -z "$best_v" ] || { newer_or_equal "$v" "$best_v" && [ "$v" != "$best_v" ]; }; }; then
+    # new enough, and newer than the best so far; between equal versions the installer's own place (~/.local/bin) wins
+    if newer_or_equal "$v" "$MIN" && { [ -z "$best_v" ] || { newer_or_equal "$v" "$best_v" && [ "$v" != "$best_v" ]; } || { [ "$v" = "$best_v" ] && [ "$c" = "${HOME:-/nonexistent}/.local/bin/analyzeit" ]; }; }; then
       best="$c"
       best_v="$v"
     fi
