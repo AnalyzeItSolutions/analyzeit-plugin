@@ -79,6 +79,46 @@ assert.ok(tools.length >= 3, "the analyst names the CLI's tools");
 assert.ok(/prefer them to `query_records`/.test(agent), "the analyst prefers results-only analyses to reading rows");
 assert.ok(/request_access/.test(agent) && /link/.test(agent), "the analyst hands access to the user by link");
 
+// The hook that answers a data question before the model is called: without it, every data question is the model's.
+const hooks = json("analyzeit/hooks/hooks.json").hooks;
+assert.ok(hooks.UserPromptSubmit?.length, "the plugin hooks the message before the model is called");
+const promptHook = hooks.UserPromptSubmit[0].hooks[0].command;
+assert.match(promptHook, /prompt-hook\.sh" prompt/, "the prompt hook runs the launcher script");
+assert.ok((hooks.PostToolUse?.length ?? 0) > 0, "the tool hook notes when the model reads the file anyway");
+
+// The launcher of the hook: the newest analyzeit that is new enough, not the first on PATH (an old copy left in
+// /usr/local/bin must not hide a current one in ~/.local/bin, or the hook answers with the old build).
+const hookScript = readFileSync(join(root, "analyzeit/scripts/prompt-hook.sh"), "utf8");
+assert.match(hookScript, /^#!\/bin\/sh/);
+assert.match(hookScript, /version_of\(\)/, "the hook checks the version of every copy it finds");
+assert.match(hookScript, /newer_or_equal "\$v" "\$MIN"/, "the hook takes the newest copy that is new enough");
+assert.match(hookScript, /exec "\$bin" hook/, "the hook runs the command's hook");
+for (const v of ["0.9.0", "0.10.0", "0.9.1"]) {
+    const d = mkdtempSync(join(tmpdir(), "azhook-"));
+    const f = join(d, "analyzeit");
+    writeFileSync(f, `#!/bin/sh\n[ "$1" = --version ] && echo "analyzeit ${v}" && exit 0\necho "HOOKED:$*"\n`);
+    chmodSync(f, 0o755);
+    const r = spawnSync("sh", [join(root, "analyzeit/scripts/prompt-hook.sh"), "prompt"], { env: { PATH: `${d}:/usr/bin:/bin`, HOME: "/nonexistent" }, encoding: "utf8" });
+    assert.equal(r.stdout.trim(), "HOOKED:hook prompt", `analyzeit ${v} runs the hook`);
+    rmSync(d, { recursive: true, force: true });
+}
+const oldHook = mkdtempSync(join(tmpdir(), "azhook-"));
+writeFileSync(join(oldHook, "analyzeit"), `#!/bin/sh\n[ "$1" = --version ] && echo "analyzeit 0.8.0" && exit 0\necho "HOOKED:$*"\n`);
+chmodSync(join(oldHook, "analyzeit"), 0o755);
+const oldRun = spawnSync("sh", [join(root, "analyzeit/scripts/prompt-hook.sh"), "prompt"], { env: { PATH: `${oldHook}:/usr/bin:/bin`, HOME: "/nonexistent" }, encoding: "utf8" });
+assert.ok(!oldRun.stdout.includes("HOOKED"), "an old command is never called (it would read 'hook prompt' as a question)");
+rmSync(oldHook, { recursive: true, force: true });
+
+// The rule the model follows: when the device has already answered, the answer is relayed and nothing else is done.
+// Without it in the skill, the agent and the command, the model starts again from the top for a result that is given.
+const RULE = /already answered on the user's device|already carries that answer/;
+for (const f of ["analyzeit/skills/analyzeit/SKILL.md", "analyzeit/agents/analyzeit-analyst.md", "analyzeit/commands/analyze.md"]) {
+    const t = readFileSync(join(root, f), "utf8");
+    assert.match(t, RULE, `${f} says that the device may have answered already`);
+    assert.match(t, /do not spawn (a |the )?(sub-agent|analyst)|not spawn the analyst sub-agent|only then, use the tools/i, `${f} says not to spawn the analyst when the answer is there`);
+}
+assert.match(readFileSync(join(root, "analyzeit/commands/status.md"), "utf8"), /doctor/, "the status command says whether the hook is installed");
+
 // Nothing that looks like a secret or a local path, anywhere in the package.
 const patterns = [/sk-[A-Za-z0-9]{20,}/, /AKIA[0-9A-Z]{16}/, /-----BEGIN [A-Z ]*PRIVATE KEY-----/, /Bearer [A-Za-z0-9._-]{20,}/, /aza[crt]_[A-Za-z0-9_-]{20,}/, /mongodb(\+srv)?:\/\//, /\/Users\/[a-z]/i, /[\w.+-]+@(gmail|outlook|yahoo)\.com/i];
 function* walk(dir) {

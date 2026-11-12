@@ -4,7 +4,7 @@ Ask Claude about the data on your computer **without the data leaving it.** Clau
 
 ## Requirements
 
-The AnalyzeIt command, version 0.5.1 or newer. This plugin does not install anything itself; it starts the program you installed:
+The AnalyzeIt command, version 0.5.1 or newer (0.9.0 or newer for the pre-answer hook below). This plugin does not install anything itself; it starts the program you installed:
 
 ```
 curl -fsSL https://www.analyzeit.si/install.sh | sh
@@ -14,20 +14,26 @@ analyzeit data share sales on          # lets Claude see computed results of thi
 
 A dataset is invisible to Claude until you run `analyzeit data share <dataset> on`; turn it off the same way. Restart Claude after installing.
 
+## The answer comes before Claude
+
+The plugin hooks into the conversation: **before the model is called**, a data question about a dataset you shared is read and answered on your computer, and the computed result is handed to the assistant as context. The assistant relays it; it does not list datasets, open files or call tools to work the answer out again. A question that is only a figure ("how many rows", "what is the total") is answered without calling the model at all.
+
+Nothing here is a setting to remember: the hook is part of the plugin and runs on every message. `analyzeit doctor` says whether the installed plugin has it.
+
 ## What you can do
 
 | You type | What happens |
 |---|---|
+| Just ask "how many rows are in loans?" | The hook answers on your computer before the model is called; the assistant relays the result |
 | `/analyzeit:analyze top 5 regions by revenue` | The analyst sub-agent picks the built-in analysis and answers from its result |
 | `/analyzeit:overview sales` | A short briefing on one dataset: summary, top groups, trend, outliers, drivers |
-| `/analyzeit:status` | Checks the install, the version and which datasets Claude may see |
-| Just ask "which products drive revenue?" | The skill hands the question to the analyst |
+| `/analyzeit:status` | Checks the install, the version, the hook and which datasets Claude may see |
 
 Built-in analyses: summary, top groups, totals/averages/medians (overall or by group), trend by day/week/month/quarter/year, forecast, outliers, correlations, what drives a number, and comparison of groups with a significance test.
 
 ## What the plugin runs, sends and fetches
 
-* **Runs:** `scripts/analyzeit-mcp.sh`, a short shell script that locates the `analyzeit` program, checks it is version 0.5.1 or newer and starts `analyzeit mcp` (an MCP server over stdio). It downloads nothing and runs no package manager.
+* **Runs:** `scripts/analyzeit-mcp.sh`, a short shell script that locates the `analyzeit` program, checks it is version 0.5.1 or newer and starts `analyzeit mcp` (an MCP server over stdio). It downloads nothing and runs no package manager. `scripts/prompt-hook.sh` runs the same program's hook before each message (0.9.0 or newer): it locates the newest `analyzeit` it can find, and is silent when there is none.
 * **Tools Claude gets:** `list_datasets` (names, row counts, column names and types of datasets you allowed), `analyze` (a computed result of one built-in analysis), seven named-input versions of the same analyses (`summary`, `top_groups`, `trend`, `forecast`, `find_outliers`, `drivers`, `compare_groups`) `browser_open`, `browser_snapshot` and `browser_act` (Claude drives your own signed-in browser on any website, step by step, through the AnalyzeIt extension on your computer; sign-in is yours, irreversible clicks ask you first), `propose_browser_task`, `browser_task_status` and `draft_post` (you plan steps for your own signed-in browser, handed straight to the AnalyzeIt extension on your computer, you approve them on AnalyzeIt and in the AnalyzeIt browser extension, and the task waits while you sign in; nothing runs or posts without you; needs `analyzeit login` and 0.6.1 or newer) and `privacy_policy`. All of them need `analyzeit` 0.6.0 or newer for the named-input tools; `analyze` works from 0.5.1.
 * **Sends (local server):** nothing. The `analyzeit` program answers from your encrypted local vault and works offline.
 * **Sends (hosted server `analyzeit-cloud`):** the plugin also registers a second, hosted MCP server at `https://api.analyzeit.si/mcp`, run by AnalyzeIt. It is how Claude gets the `compute` tool (exact finance, unit, date, currency, stock and weather calculations), the named analyses (summary, trend, forecast, drivers, cohorts, funnels and more) on data in your online AnalyzeIt account, computed on its servers with results only, `ask` (hands a question or task to AnalyzeIt's own agent) the account, memory and recall tools, and read-only workspace tools (the plan and its limits, dashboards, analysis runs, digests, computer-task status and place context). **What you ask for goes there:** the calculation inputs, the question or task text you give `ask`, and anything you tell it to remember. It does not receive your local datasets, rows or files; those stay behind the local server. It needs you to sign in to your AnalyzeIt account in the browser on first use, so nothing is sent before you do. Do not want it? Run `claude mcp remove analyzeit-cloud` or disable that server in `/mcp`; the local analyses are unaffected. Privacy policy: https://www.analyzeit.si/privacy.

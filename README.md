@@ -17,7 +17,11 @@ Ask Claude "which regions sold most last quarter?" or use `/analyzeit:analyze to
 
 ## How it works
 
-This plugin is a thin layer: a small launcher script (`analyzeit/scripts/analyzeit-mcp.sh`, which checks the command is installed and new enough) starts `analyzeit mcp` (a tool server over stdio, part of the command line program). That program answers from your encrypted local vault. By default it runs the analysis on your computer and works with no network.
+**The answer comes before Claude is called.** The plugin hooks into the conversation. Before the model sees your message, a data question about a dataset you shared is read and answered on your computer, by the same results-only path the tools use (the same sharing and egress gates: only datasets you allowed, never rows). The computed result is handed to the assistant as context, so it answers in one step instead of listing datasets, calling tools and re-reading the conversation. A question that is only a figure ("how many rows", "what is the total") is answered without calling the model at all.
+
+Nothing here is a setting to remember: the hook is part of the plugin and runs on every message, on any machine that installs it. `analyzeit doctor` says whether the installed plugin has it, and `/analyzeit:status` repeats it.
+
+The rest of the plugin is a thin layer: a small launcher script (`analyzeit/scripts/analyzeit-mcp.sh`, which checks the command is installed and new enough) starts `analyzeit mcp` (a tool server over stdio, part of the command line program). That program answers from your encrypted local vault. By default it runs the analysis on your computer and works with no network.
 
 **Cloud compute (optional, off by default).** `analyzeit compute cloud` moves the analysis to AnalyzeIt's compute service: for each question, only the columns that analysis needs are sent over HTTPS, analysed in memory and not stored or logged, and the result is saved on your computer (`results.jsonl`). Your data stays stored on your computer either way, and the same results-only rules apply in the service. If the service cannot be reached, the analysis runs locally. `analyzeit compute device` turns it off.
 

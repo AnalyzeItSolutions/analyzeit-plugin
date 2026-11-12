@@ -41,7 +41,7 @@
           {
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/prompt-hook.sh\" prompt 2>/dev/null || true",
-            "timeout": 15
+            "timeout": 30
           }
         ]
       }

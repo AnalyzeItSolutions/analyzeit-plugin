@@ -1,13 +1,20 @@
 ---
 name: analyzeit
-description: Working with data kept in AnalyzeIt (the user's local datasets): totals, groups, trends, forecasts, comparisons.
+description: Working with data kept in AnalyzeIt (the user's local datasets): totals, groups, trends, forecasts, comparisons. The plugin answers a data question on the user's device before the model is called; when the message already carries that answer, relay it as it is instead of calling tools.
 ---
 
 # Working with AnalyzeIt
 
 AnalyzeIt keeps the user's data **on their own computer** and analyses it there. This plugin starts the `analyzeit` command as a tool server (`analyzeit mcp`). It gives you **computed results only**: totals, averages, counts per group, trends, forecasts, outlier counts, drivers and group comparisons. It has no tool that reads rows, runs SQL or opens files, by design.
 
-**Delegate to the `analyzeit:analyzeit-analyst` sub-agent** for any data question (Agent tool, `subagent_type: analyzeit:analyzeit-analyst`), passing the user's question verbatim. For "tell me about this dataset", use `/analyzeit:overview <dataset>`; for "is it set up", use `/analyzeit:status`.
+## The rule: answer from what is already computed
+
+**Before anything else, check the message you were given.** This plugin answers data questions *on the user's device, before you are called*: the answer is already in the message, as a block that starts with "This question was already answered on the user's device, before you were called".
+
+- **If that block is there, the work is done.** Relay the answer to the user as it is, in a sentence if you like. Do **not** call a tool, do **not** spawn the analyst sub-agent, do **not** open the file and do **not** recompute anything. A second round of tool calls for a result the device already computed is the thing this plugin exists to avoid.
+- **If it is not there**, the question either was not about data the user shared, or the device could not read it. Then, and only then, use the tools below.
+
+**Delegate to the `analyzeit:analyzeit-analyst` sub-agent** for a data question the device did not answer (Agent tool, `subagent_type: analyzeit:analyzeit-analyst`), passing the user's question verbatim. For "tell me about this dataset", use `/analyzeit:overview <dataset>`; for "is it set up", use `/analyzeit:status`.
 
 **If the tools are missing or the server fails to start:** the `analyzeit` command is not installed, or it is older than 0.5.1. Tell the user to run `curl -fsSL https://www.analyzeit.si/install.sh | sh` (or `analyzeit update` if it is installed), then restart Claude.
 
