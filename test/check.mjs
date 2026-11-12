@@ -85,6 +85,8 @@ assert.ok(hooks.UserPromptSubmit?.length, "the plugin hooks the message before t
 const promptHook = hooks.UserPromptSubmit[0].hooks[0].command;
 assert.match(promptHook, /prompt-hook\.sh" prompt/, "the prompt hook runs the launcher script");
 assert.ok((hooks.PostToolUse?.length ?? 0) > 0, "the tool hook notes when the model reads the file anyway");
+const sessionStart = (hooks.SessionStart ?? []).flatMap((m) => m.hooks ?? []).map((h) => h.command);
+assert.ok(sessionStart.some((c) => /prompt-hook\.sh" notice/.test(c)), "session start says when the hook is off or cannot run");
 
 // The launcher of the hook: the newest analyzeit that is new enough, not the first on PATH (an old copy left in
 // /usr/local/bin must not hide a current one in ~/.local/bin, or the hook answers with the old build).
@@ -108,6 +110,45 @@ chmodSync(join(oldHook, "analyzeit"), 0o755);
 const oldRun = spawnSync("sh", [join(root, "analyzeit/scripts/prompt-hook.sh"), "prompt"], { env: { PATH: `${oldHook}:/usr/bin:/bin`, HOME: "/nonexistent" }, encoding: "utf8" });
 assert.ok(!oldRun.stdout.includes("HOOKED"), "an old command is never called (it would read 'hook prompt' as a question)");
 rmSync(oldHook, { recursive: true, force: true });
+
+// The hook is on by default, and a hook that cannot run says so instead of quietly passing every question to the
+// model: the launcher writes a note that doctor and the session-start notice read, and clears it once a working
+// command is found.
+const store = mkdtempSync(join(tmpdir(), "azstore-"));
+const problem = join(store, "hook-problem.txt");
+const launch = (bin, mode) =>
+  spawnSync("sh", [join(root, "analyzeit/scripts/prompt-hook.sh"), mode], {
+    env: { PATH: "/usr/bin:/bin", HOME: "/nonexistent", ANALYZEIT_HOME: store, ANALYZEIT_BIN: bin },
+    encoding: "utf8",
+  });
+const fakeHook = (name, version) => {
+  const f = join(store, name);
+  writeFileSync(f, `#!/bin/sh\n[ "$1" = --version ] && echo "analyzeit ${version}" && exit 0\necho "HOOKED:$*"\n`);
+  chmodSync(f, 0o755);
+  return f;
+};
+const missingRun = launch(join(store, "missing"), "prompt");
+assert.equal(missingRun.status, 0, "a missing command does not break the turn");
+assert.match(readFileSync(problem, "utf8"), /not installed/, "a missing command is written down for doctor");
+assert.match(launch(join(store, "missing"), "notice").stdout, /"systemMessage".*not installed/, "session start says the command is missing");
+const staleRun = launch(fakeHook("old", "0.8.0"), "prompt");
+assert.equal(staleRun.status, 0);
+assert.match(readFileSync(problem, "utf8"), /too old/, "a too-old command is written down for doctor");
+assert.match(launch(fakeHook("old", "0.8.0"), "notice").stdout, /"systemMessage".*too old/, "session start says the command is too old");
+const goodRun = launch(fakeHook("good", "0.9.3"), "prompt");
+assert.equal(goodRun.stdout.trim(), "HOOKED:hook prompt", "a working command runs the prompt hook");
+assert.ok(!existsSync(problem), "a working command clears the note");
+assert.equal(launch(fakeHook("good", "0.9.3"), "notice").stdout.trim(), "HOOKED:hook notice", "the notice asks the command whether the hook is on");
+assert.match(hookScript, /hook-problem\.txt/, "the launcher writes the note doctor reads");
+rmSync(store, { recursive: true, force: true });
+
+// Default on: installing the plugin is the whole setting. Only an explicit off turns the hook off.
+for (const f of ["analyzeit/README.md", "analyzeit/skills/analyzeit/SKILL.md"]) {
+  const t = readFileSync(join(root, f), "utf8");
+  assert.match(t, /on by default/i, `${f} says the hook is on by default`);
+  assert.match(t, /analyzeit hook off/, `${f} says how to turn it off`);
+}
+assert.match(readme, /analyzeit hook on/, "the README names the switch that turns it back on");
 
 // The rule the model follows: when the device has already answered, the answer is relayed and nothing else is done.
 // Without it in the skill, the agent and the command, the model starts again from the top for a result that is given.

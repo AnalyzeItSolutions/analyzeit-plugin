@@ -9,6 +9,11 @@
             "type": "command",
             "command": "analyzeit memory hook session-start 2>/dev/null || true",
             "timeout": 12
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/prompt-hook.sh\" notice 2>/dev/null || true",
+            "timeout": 12
           }
         ]
       }

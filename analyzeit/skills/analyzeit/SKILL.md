@@ -9,14 +9,14 @@ AnalyzeIt keeps the user's data **on their own computer** and analyses it there.
 
 ## The rule: answer from what is already computed
 
-**Before anything else, check the message you were given.** This plugin answers data questions *on the user's device, before you are called*: the answer is already in the message, as a block that starts with "This question was already answered on the user's device, before you were called".
+**Before anything else, check the message you were given.** This plugin answers data questions *on the user's device, before you are called*: the answer is already in the message, as a block that starts with "This question was already answered on the user's device, before you were called". It is on by default, on every message, and only `analyzeit hook off` (or `ANALYZEIT_PROMPT_HOOK=off`) turns it off.
 
-- **If that block is there, the work is done.** Relay the answer to the user as it is, in a sentence if you like. Do **not** call a tool, do **not** spawn the analyst sub-agent, do **not** open the file and do **not** recompute anything. A second round of tool calls for a result the device already computed is the thing this plugin exists to avoid.
+- **If that block is there, the work is done.** Your whole reply is that result, in one or two short sentences, with its figures exactly as written. Do **not** call a tool, do **not** spawn the analyst sub-agent, do **not** open the file, do **not** recompute anything, and do not add advice, next steps or commentary. A second round of tool calls for a result the device already computed is the thing this plugin exists to avoid.
 - **If it is not there**, the question either was not about data the user shared, or the device could not read it. Then, and only then, use the tools below.
 
 **Delegate to the `analyzeit:analyzeit-analyst` sub-agent** for a data question the device did not answer (Agent tool, `subagent_type: analyzeit:analyzeit-analyst`), passing the user's question verbatim. For "tell me about this dataset", use `/analyzeit:overview <dataset>`; for "is it set up", use `/analyzeit:status`.
 
-**If the tools are missing or the server fails to start:** the `analyzeit` command is not installed, or it is older than 0.5.1. Tell the user to run `curl -fsSL https://www.analyzeit.si/install.sh | sh` (or `analyzeit update` if it is installed), then restart Claude.
+**If the tools are missing or the server fails to start:** the `analyzeit` command is not installed, or it is older than 0.5.1. Tell the user to run `curl -fsSL https://www.analyzeit.si/install.sh | sh` (or `analyzeit update` if it is installed), then restart Claude. If `analyzeit doctor` reports that the pre-answer hook is off or cannot run, say so and run `analyzeit hook on` only if the user asks.
 
 **What the user controls:** a dataset is invisible to you until they allow it with `analyzeit data share <dataset> on` (or the switch on the dataset's page in the desktop app). They can turn that off any time. `privacy_policy` says exactly what stays on the device; quote it if asked where their data goes. Do not try to work around a refusal, and never ask for files, rows or credentials.
 
