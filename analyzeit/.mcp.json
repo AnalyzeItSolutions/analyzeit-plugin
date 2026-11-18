@@ -5,7 +5,8 @@
     },
     "analyzeit-cloud": {
       "type": "http",
-      "url": "https://api.analyzeit.si/mcp"
+      "url": "https://api.analyzeit.si/mcp",
+      "headersHelper": "${CLAUDE_PLUGIN_ROOT}/scripts/mcp-headers.sh"
     }
   }
 }
