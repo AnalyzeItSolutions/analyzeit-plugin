@@ -176,4 +176,27 @@ for (const f of walk(root)) {
   const text = readFileSync(f, "utf8");
   for (const re of patterns) assert.ok(!re.test(text), `${relative(root, f)} matches ${re}`);
 }
+
+// The directory edition (hosted/): what the Claude directory accepts from an unverified organization.
+// Markdown, JSON, text and PNG only; no hooks, no #!, no local (stdio) MCP server, no scripts.
+{
+  const h = join(root, "hosted");
+  const hp = json("hosted/.claude-plugin/plugin.json");
+  assert.match(hp.version, /^\d+\.\d+\.\d+$/);
+  assert.notEqual(hp.name, plugin.name, "the hosted edition has its own name, so both can be installed");
+  for (const [k, s] of Object.entries(json("hosted/.mcp.json").mcpServers)) {
+    assert.equal(s.type, "http", `${k} is a hosted server`);
+    assert.match(s.url, /^https:\/\//);
+    assert.ok(!("command" in s), `${k} runs nothing on the user's computer`);
+  }
+  for (const f of walk(h)) {
+    const r = relative(h, f);
+    assert.match(r, /\.(md|json|txt|png)$|^LICENSE$/, `${r}: only Markdown, JSON, text and PNG`);
+    assert.ok(!/(^|\/)hooks(\/|\.json)|^scripts\//.test(r), `${r}: no hooks or scripts`);
+    if (f.endsWith(".png")) continue;
+    const t = readFileSync(f, "utf8");
+    assert.ok(!t.startsWith("#!") && !t.includes("\0"), `${r}: no #! and no NUL`);
+    assert.ok(!/curl\s|\| *sh\b|npx |pip install|brew install/.test(t), `${r}: no install commands`);
+  }
+}
 console.log("ok");

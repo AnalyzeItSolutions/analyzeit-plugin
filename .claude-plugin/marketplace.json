@@ -10,6 +10,11 @@
       "name": "analyzeit",
       "source": "./analyzeit",
       "description": "Ask Claude about data on your own computer. Runs the analyzeit command; Claude gets computed results only, never rows."
+    },
+    {
+      "name": "analyzeit-cloud",
+      "source": "./hosted",
+      "description": "AnalyzeIt's hosted server only: analyses of the data in your AnalyzeIt account and exact calculations. Nothing runs on your computer."
     }
   ]
 }

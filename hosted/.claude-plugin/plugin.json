@@ -1,0 +1,19 @@
+{
+  "name": "analyzeit-cloud",
+  "displayName": "AnalyzeIt",
+  "version": "1.0.0",
+  "description": "Ask about the data in your AnalyzeIt account (uploaded tables and connected sources such as Razorpay or Shopify) and get exact calculations, from AnalyzeIt's hosted server. Analyses run on AnalyzeIt's servers in code and Claude receives computed results only, never rows. Nothing runs on your computer; you sign in to AnalyzeIt in the browser on first use.",
+  "author": {
+    "name": "AnalyzeIt",
+    "url": "https://www.analyzeit.si"
+  },
+  "homepage": "https://www.analyzeit.si",
+  "repository": "https://github.com/AnalyzeItSolutions/analyzeit-plugin",
+  "license": "MIT",
+  "keywords": ["analytics", "data", "forecast", "calculations", "razorpay", "shopify", "mcp"],
+  "icon": "./icon.png",
+  "documentationUrl": "https://www.analyzeit.si/docs",
+  "supportUrl": "https://www.analyzeit.si/contact",
+  "privacyPolicyUrl": "https://www.analyzeit.si/privacy",
+  "termsOfServiceUrl": "https://www.analyzeit.si/terms"
+}
