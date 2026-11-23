@@ -1,7 +1,7 @@
 {
   "name": "analyzeit",
   "displayName": "AnalyzeIt",
-  "version": "0.15.0",
+  "version": "0.15.1",
   "description": "Ask about your data while it stays stored on your computer. The assistant receives computed results only, never rows. Before the model is called, a data question about a dataset you shared is read and answered on your computer and handed to the assistant as context, so most questions are answered in one step and some without calling the model at all. Analyses run on your device, or, if you turn on cloud compute, in AnalyzeIt's compute service (api.analyzeit.si), which receives only the columns a question needs, keeps nothing and returns the result to your computer. A second hosted AnalyzeIt server (api.analyzeit.si) uses the sign-in of the analyzeit command on this computer (analyzeit login), so it needs no separate sign-in; handles calculations and questions you send it; see the README.",
   "author": {
     "name": "AnalyzeIt",

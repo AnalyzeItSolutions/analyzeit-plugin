@@ -23,9 +23,9 @@ This version runs nothing on your computer: it is one hosted MCP server plus a s
 ## What it connects to and sends
 
 * **Server:** `https://api.analyzeit.si/mcp`, run by AnalyzeIt. You sign in to your AnalyzeIt account in the browser (OAuth) on first use; nothing is sent before you do. The plugin requests, stores and sends no credentials itself.
-* **Tools:** your projects and tables, named analyses (`summary`, `aggregate`, `top_groups`, `trend`, `forecast`, `find_outliers`, `drivers`, `compare_groups`, `compare_periods`, `why_changed`, `concentration`, `cohort_retention`, `funnel`), `compute` (finance, units, dates, currency, stocks, weather, statistics), `ask` (hands a task to AnalyzeIt's own agent), `remember` and `recall` (your AnalyzeIt memory), read-only workspace tools (plan, dashboards, runs, digests), world layers, and browser tools for your linked extension.
+* **Tools:** your projects and tables, named analyses (`summary`, `aggregate`, `top_groups`, `trend`, `forecast`, `find_outliers`, `drivers`, `compare_groups`, `compare_periods`, `why_changed`, `concentration`, `cohort_retention`, `funnel`), `compute` (finance, units, dates, currency, stocks, weather, statistics), `remember` and `recall` (your AnalyzeIt memory), read-only workspace tools (plan, dashboards, runs, digests), world layers, and browser tools for your linked extension.
 * **Changes need you:** Claude cannot change your data. Access requests, edits, imports and new connections come back as a link you approve on the AnalyzeIt website.
-* **What goes to AnalyzeIt:** what Claude sends a tool: calculation inputs, the task text given to `ask`, notes to remember. What Claude is shown is also sent to Anthropic, like anything you type into Claude.
+* **What goes to AnalyzeIt:** what Claude sends a tool: calculation inputs, notes to remember. What Claude is shown is also sent to Anthropic, like anything you type into Claude.
 
 Privacy policy: https://www.analyzeit.si/privacy. Terms: https://www.analyzeit.si/terms.
 
