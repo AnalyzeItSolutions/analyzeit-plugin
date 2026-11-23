@@ -31,6 +31,13 @@ note_problem() {
   [ -d "$d" ] && printf '%s\n' "$1" > "$d/hook-problem.txt" 2>/dev/null
   printf 'AnalyzeIt: %s\n' "$1" >&2
 }
+# A message the hook could not hand to analyzeit is still counted: one line in the same event log the command writes (`analyzeit hook status`).
+# Local only, never printed, and a failed write is ignored.
+log_event() {
+  d="$(store_dir)"
+  [ -d "$d" ] && printf '{"at":%s,"outcome":"error","how":"hook could not run","route":"device","ms":0,"session":null,"prompt":"","problems":["%s"]}\n' "$(date +%s)" "$(printf '%s' "$1" | tr -d '"\\' | cut -c1-120)" >> "$d/hook-events.jsonl" 2>/dev/null
+  return 0
+}
 clear_problem() { rm -f "$(store_dir)/hook-problem.txt" 2>/dev/null; }
 
 bin="${ANALYZEIT_BIN:-}"
@@ -53,6 +60,7 @@ fi
 not_installed() {
   msg="the analyzeit command is not installed, so data questions are not answered on this device before the model is called. Install it with: curl -fsSL https://www.analyzeit.si/install.sh | sh"
   note_problem "$msg"
+  [ "${1:-prompt}" = "prompt" ] && log_event "$msg"
   # A one-time notice at session start, when the assistant can still tell the user before they ask anything.
   if [ "${1:-prompt}" = "notice" ]; then
     printf '{"systemMessage":"AnalyzeIt: %s"}\n' "$msg"
@@ -68,6 +76,7 @@ have="$(version_of "$bin")"
 if ! newer_or_equal "$have" "$MIN"; then
   msg="analyzeit $have is too old for the pre-answer hook (it needs $MIN or newer), so data questions are not answered on this device before the model is called. Run analyzeit update."
   note_problem "$msg"
+  [ "${1:-prompt}" = "prompt" ] && log_event "$msg"
   if [ "${1:-prompt}" = "notice" ]; then
     printf '{"systemMessage":"AnalyzeIt: %s"}\n' "$msg"
   fi
